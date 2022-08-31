@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html >
+<head>
+    <title>首页</title>
+    {% include 'admin/common/header.html' %}
+    <link rel="stylesheet" href="/static/admin/admin/css/other/console1.css"/>
+    <!-- 主 题 更 换 -->
+    <style id="pearadmin-bg-color"></style>
+</head>
+<body class="pear-container" >
+<div >
+    <div class="layui-row layui-col-space10" >
+        <div class="layui-col-md9" >
+            <div class="layui-card" >
+                <div class="layui-card-header">任务日志</div>
+                <div class="layui-card-body" >
+                    <div class="layui-tab custom-tab layui-tab-brief" >
+                        <div>
+                            <div style="border: 1px solid #ccc; border-radius: 16px;padding-block: 10px;height: 60vw;background-color:rgb(40,44,52);color:azure">
+                                <div class="layui-row" style="height: 30vw;">
+                                    <div id="subdomain_log" class="layui-col-md6" style="padding-left: 5px;height: 30vw;overflow: auto;">
+
+                                    </div>
+                                    <div id="webfind_log" class="layui-col-md6" style="padding-left: 5px;height: 30vw;border-left:1px solid rgb(221, 24, 24);overflow: auto;">
+
+                                    </div>
+                                </div>
+                                <hr class="layui-border-orange">
+                                <div class="layui-row"style="height: 30vw;">
+                                    <div id="crawlergo_log" class="layui-col-md6" style="padding-left: 5px;height: 30vw;overflow: auto;">
+ 
+                                    </div>
+                                    <div id="xray_log" class="layui-col-md6" style="padding-left: 5px;height: 30vw;border-left:1px solid rgb(221, 24, 24);overflow: auto;">
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-md3">
+            <div class="layui-card">
+                <div class="layui-card-header">任务进度</div>
+                <div class="layui-card-body">
+                    <div class="layui-row">
+                        <div style="border: 1px solid #ccc; border-radius: 16px;padding-block: 10px;height: 60vw;background-color:rgb(40,44,52);color:azure" >
+                            <div id="task_progress" class="layui-row" style="padding-left: 5px;height: 30vw;overflow: auto;">
+
+                            </div>
+                            <hr class="layui-border-orange">
+                            <div id="system_process" class="layui-row"style="padding-left: 5px;height: 30vw;overflow: auto;">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--</div>-->
+{% include 'admin/common/footer.html' %}
+<script>
+  layui.use(['layer'], function () {
+    var $ = layui.jquery,
+      layer = layui.layer
+    //   element = layui.element,
+    //   count = layui.count,
+    //   echarts = layui.echarts
+    
+    get_log();
+    function get_log(){
+        setTimeout(get_log, 3000);
+        $.ajax({
+            url: "/api/v1/task/log",
+            type: 'get',
+            dataType: 'json',
+            success: function (res) {
+                if (res.code == 1) {
+                    $('#subdomain_log').html(res.subdomain_log);
+                    $('#webfind_log').html(res.webfind_log);
+                    $('#crawlergo_log').html(res.crawlergo_log);
+                    $('#xray_log').html(res.xray_log);
+                    $('#task_progress').html(res.task_progress);
+                    $('#system_process').html(res.system_process);
+                } else {
+                    layer.msg('任务情况刷新失败', {icon: 2});
+                }
+            }
+        });
+    }
+  })
+</script>
+</body>
+</html>

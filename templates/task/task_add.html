@@ -1,0 +1,85 @@
+{% extends 'admin/base.html' %}
+{% block title %}
+    <title>任务管理</title>
+{% endblock %}
+
+{% block body %}
+    <form class="layui-form">
+        <div class="mainBox">
+            <div class="main-container">
+                <div class="main-container">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">任务名称</label>
+                        <div class="layui-input-block">
+                            <input type="text" name="task_name" lay-verify="title" autocomplete="off" placeholder="请输入任务名称"
+                                   class="layui-input">
+                        </div>
+                    </div>
+                    <label class="layui-form-label">端口范围</label>
+                    <div class="layui-input-block">
+                      <select name="port_limit" lay-filter="port_limit">
+                        <option value=""></option>
+                        <option value="TOP_10" >TOP_10</option>
+                        <option value="TOP_100" selected="">TOP_100</option>
+                        <option value="TOP_1000">TOP_1000</option>
+                        <option value="FULL_PORT">全端口</option>
+                      </select>
+                    </div>
+                    <label class="layui-form-label">漏洞扫描</label>
+                    <div class="layui-input-block">
+                      <input type="checkbox" name="vulscan" lay-skin="switch" lay-text="开启|关闭" title="漏洞扫描" value="True">
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">任务目标</label>
+                        <div class="layui-input-block">
+                          <textarea name="task_target" placeholder="请以回车换行，一行一个目标；ip、域名均可" class="layui-textarea"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="bottom">
+            <div class="button-container">
+                <button type="submit" class="pear-btn pear-btn-primary pear-btn-sm" lay-submit=""
+                        lay-filter="task-save">
+                    <i class="layui-icon layui-icon-ok"></i>
+                    提交
+                </button>
+                <button type="reset" class="pear-btn pear-btn-sm">
+                    <i class="layui-icon layui-icon-refresh"></i>
+                    重置
+                </button>
+            </div>
+        </div>
+    </form>
+{% endblock %}
+
+{% block models_script %}
+    <script>
+
+      layui.use(['form', 'jquery'], function () {
+        let form = layui.form
+        let $ = layui.jquery
+        form.on('submit(task-save)', function (data) {
+          $.ajax({
+            url: '/api/v1/task/add',
+            data: JSON.stringify(data.field),
+            dataType: 'json',
+            contentType: 'application/json',
+            type: 'post',
+            success: function (result) {
+              if (result.success) {
+                layer.msg(result.message, { icon: 1, time: 1000 }, function () {
+                  parent.layer.close(parent.layer.getFrameIndex(window.name))//关闭当前页
+                  parent.layui.table.reload('tables')
+                })
+              } else {
+                layer.msg(result.message, { icon: 2, time: 1000 })
+              }
+            },
+          })
+          return false
+        })
+      })
+    </script>
+{% endblock %}

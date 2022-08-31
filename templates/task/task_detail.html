@@ -1,0 +1,197 @@
+{% extends 'task/base.html' %}
+
+{% block title %}
+    <link rel="stylesheet" href="/static/admin/admin/css/other/user.css"/>
+    
+{% endblock %}
+
+
+{% block body %}
+    {# 查询表单 #}
+    <div class="layui-card">
+        <div class="layui-card-body" style="padding: 5px 5px;">
+            <form class="layui-form" action="" lay-filter="task-query-form">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">任务名称</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="realName" placeholder="" class="layui-input">
+                    </div>
+                    <label class="layui-form-label">资产搜索</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="username" placeholder="" class="layui-input">
+                    </div>
+                    <button class="pear-btn pear-btn-md pear-btn-primary" lay-submit lay-filter="task-query">
+                        <i class="layui-icon layui-icon-search"></i>
+                        查询
+                    </button>
+                    <button type="reset" class="pear-btn pear-btn-md">
+                        <i class="layui-icon layui-icon-refresh"></i>
+                        重置
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    {# 任务详情表格 #}
+    <div class="layui-tab layui-tab-card">
+        <ul class="layui-tab-title">
+          <li class="layui-this">站点详情</li>
+          <li>子域名</li>
+          <li>端口与服务</li>
+          <li>C段</li>
+          <li>Web扫描</li>
+        </ul>
+        <div class="layui-tab-content" style="height: 100px;padding-top: 0px;padding-bottom: 0px;">
+          <div class="layui-tab-item layui-show">
+            <table id="site-tables" lay-filter="site-tables" style="border: 1px solid #ccc; border-radius: 16px;padding-left:10px;padding-block: 10px"></table>
+          </div>
+          <div class="layui-tab-item">
+            <table id="subdomain-tables" lay-filter="subdomain-tables" style="border: 1px solid #ccc; border-radius: 16px;padding-left:10px;padding-block: 10px"></table>
+          </div>
+          
+          <div class="layui-tab-item">
+              <table id="port-tables" lay-filter="port-tables" style="border: 1px solid #ccc; border-radius: 16px;padding-left:10px;padding-block: 10px"></table>
+          </div>
+          <div class="layui-tab-item">
+            <table id="cduan-tables" lay-filter="cduan-tables" style="border: 1px solid #ccc; border-radius: 16px;padding-left:10px;padding-block: 10px"></table>
+          </div>
+          <div class="layui-tab-item">
+            <iframe height="1000px" width="100%" src="{{vulscan_result_path}}" frameborder="0" class="layadmin-iframe" name="iframeMain"></iframe>
+          </div>
+        </div>
+      </div>
+{% endblock %}
+
+{% block models_script %}
+
+    <script>
+      layui.use(['table', 'form', 'jquery', 'element'], function () {
+        let table = layui.table
+        let form = layui.form
+        let $ = layui.jquery
+        let element = layui.element
+        
+        // 表格数据
+        const get_site_columns = () => [
+          [
+            { title: 'URL', field: 'url' ,sort:true},
+            { title: 'IP', field: 'ip',sort:true},
+            { title: '状态码', field: 'status_code' ,sort:true},
+            { title: '网站标头', field: 'title' ,sort:true},
+            { title: '网站指纹', field: 'finger' ,sort:true},
+          ],
+        ]
+
+        // 渲染表格数据
+        table.render({
+          parseData: parserTableData,
+          elem: '#site-tables',
+          url: '/api/v1/task/show/site/{{ task_id }}', // 数据接口
+          page: true,
+          limit: 20,
+          limits:[20,30,60,100,100000],
+          cols: get_site_columns(),
+          even: true,
+          skin: 'line',
+          escape: true,
+          height: 'full-148',
+          toolbar: '#toolbar', /*工具栏*/
+          text: { none: '暂无信息' },
+          defaultToolbar: [ 'filter', 'print', 'exports'], /*默认工具栏*/
+        })
+      
+
+
+        // 表格数据
+        const get_subdomain_columns = () => [
+          [
+            {type: 'numbers', title: '序号', width: 80},
+            { title: '域名', field: 'domain' },
+            { title: '记录值', field: 'domain_record'},
+            { title: '任务id', field: 'task_id' },
+          ],
+        ]
+
+        // 渲染表格数据
+        table.render({
+          parseData: parserTableData,
+          elem: '#subdomain-tables',
+          url: '/api/v1/task/show/subdomain/{{ task_id }}', // 数据接口
+          page: true,
+          limit: 20,
+          limits:[10,20,30,60,100,100000],
+          cols: get_subdomain_columns(),
+          even: true,
+          skin: 'line',
+          escape: true,
+          height: 'full-148',
+          toolbar: '#toolbar', /*工具栏*/
+          text: { none: '暂无信息' },
+          defaultToolbar: [ 'filter', 'print', 'exports'], /*默认工具栏*/
+        })
+
+        // 表格数据
+        const get_port_columns = () => [
+          [
+            {type: 'numbers', title: '序号', width: 80,sort:true},
+            { title: 'IP', field: 'ip' ,sort:true},
+            { title: '端口', field: 'port', width: 80,align: 'center' ,sort:true},
+            { title: '端口服务', field: 'service',sort:true},
+            { title: '指纹', field: 'banner',sort:true},
+          ],
+        ]
+
+        // 渲染表格数据
+        table.render({
+          parseData: parserTableData,
+          elem: '#port-tables',
+          url: '/api/v1/task/show/portscan/{{ task_id }}', // 数据接口
+          page: true,
+          limit: 20,
+          limits:[10,20,30,60,100,100000],
+          cols: get_port_columns(),
+          even: true,
+          skin: 'line',
+          // escape: true,
+          height: 'full-148',
+          toolbar: '#toolbar', /*工具栏*/
+          text: { none: '暂无信息' },
+          defaultToolbar: [ 'filter', 'print', 'exports'], /*默认工具栏*/
+        })
+
+        // 表格数据
+        const get_cudan_columns = () => [
+          [
+            { title: '任务ID', field: 'task_id' },
+            { title: '任务名称', field: 'task_name',align: 'center' },
+            { title: 'C段', field: 'task_c_duan'},
+          ],
+        ]
+
+        // 渲染表格数据
+        table.render({
+          parseData: parserTableData,
+          elem: '#cduan-tables',
+          url: '/api/v1/task/show/cduan/{{ task_id }}', // 数据接口
+          page: true,
+          limit: 20,
+          limits:[10,20,30,60,100,100000],
+          cols: get_cudan_columns(),
+          even: true,
+          skin: 'line',
+          // escape: true,
+          height: 'full-148',
+          toolbar: '#toolbar', /*工具栏*/
+          text: { none: '暂无信息' },
+          defaultToolbar: [ 'filter', 'print', 'exports'], /*默认工具栏*/
+        })
+    })
+
+    table.on('toolbar(cduan-tables)', function (obj) {
+          if (obj.event === 'refresh') {
+            alert('刷新')
+            window.refresh()
+          } 
+        })
+    </script>
+{% endblock %}

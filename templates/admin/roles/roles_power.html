@@ -1,0 +1,82 @@
+{% extends 'admin/base.html' %}
+{% block title %}
+    <title>角色授权</title>
+{% endblock %}
+
+{% block body %}
+    <form class="layui-form" action="">
+        <div class="mainBox">
+            <div class="main-container">
+                <div class="main-container">
+                    <ul id="role-power" class="dtree" data-id="0"></ul>
+                </div>
+            </div>
+        </div>
+        <div class="bottom">
+            <div class="button-container">
+                <button type="submit" class="pear-btn pear-btn-primary pear-btn-sm" lay-submit=""
+                        lay-filter="power-save">
+                    <i class="layui-icon layui-icon-ok"></i>
+                    提交
+                </button>
+                <button type="reset" class="pear-btn pear-btn-sm">
+                    <i class="layui-icon layui-icon-refresh"></i>
+                    重置
+                </button>
+            </div>
+        </div>
+    </form>
+{% endblock %}
+
+
+{% block models_script %}
+    <script>
+      layui.use(['dtree', 'form', 'jquery'], function () {
+        let dtree = layui.dtree
+        let form = layui.form
+        let $ = layui.jquery
+
+        dtree.render({
+          elem: '#role-power',
+          method: 'get',
+          url: '/api/v1/roles/role_power/' + {{ role_id }}, /*最后是 jianja2 语法*/
+          dataFormat: 'list',
+          checkbar: true,
+          skin: 'layui',
+          initLevel: '1',
+          checkbarType: 'self',
+          response: { treeId: 'powerId', parentId: 'parentId', title: 'powerName' },
+        })
+
+        form.on('submit(power-save)', function (data) {
+          let param = dtree.getCheckbarNodesParam('role-power')
+          let ids = ''
+          for (let i = 0; i < param.length; i++) {
+            let id = param[i].nodeId
+            ids += id + ','
+          }
+          ids = ids.substr(0, ids.length - 1)
+          data.field.roleId = {{role_id}};
+          data.field.powerIds = ids
+
+          $.ajax({
+            url: '/api/v1/roles/role_power/' + data.field.roleId,
+            data: data.field,
+            dataType: 'json',
+            type: 'put',
+            success: function (result) {
+              if (result.success) {
+                layer.msg(result.message, { icon: 1, time: 1000 }, function () {
+                  parent.layer.close(parent.layer.getFrameIndex(window.name))
+                })
+              } else {
+                layer.msg(result.message, { icon: 2, time: 1000 })
+              }
+            },
+          })
+          return false
+        })
+
+      })
+    </script>
+{% endblock %}
