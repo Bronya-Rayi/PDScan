@@ -10,6 +10,8 @@
 
 不会写前端，前端略丑。。。
 
+有部分功能没有实现，比如资产的搜索啥的，小问题，可以自己导出excel然后筛选
+
 ## 安装
 
 Linux Only
@@ -17,7 +19,7 @@ Linux Only
 理论上Windows也行，但是配环境太麻烦懒得弄了
 
 ```bash
-docker build -t pdscan
+docker build . -t pdscan
 
 docker run --init -d -p 8888:8888 pdscan
 ```

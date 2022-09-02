@@ -28,7 +28,7 @@ UPLOADED_FILES_ALLOW = ['gif', 'jpg']
 JSON_AS_ASCII = False
 
 # 工具配置
-
+LOG_PATH = os.path.join(os.path.dirname(os.path.abspath(__name__)), 'log')
 ASSIGN_TASKS_LOG_PATH = os.path.join(os.path.dirname(os.path.abspath(__name__)), 'log','assign_tasks.log')
 ONEFORALL_LOG_PATH = os.path.join(os.path.dirname(os.path.abspath(__name__)), 'log','oneforall.log')
 ONEFORALL_PATH = os.path.join(os.path.dirname(os.path.abspath(__name__)), 'tools', 'oneforall')

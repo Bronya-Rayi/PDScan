@@ -54,6 +54,17 @@ def create_app() -> Flask:
     if not os.path.exists(config.SCANINFO_RESULTS_PATH):
         os.makedirs(config.SCANINFO_RESULTS_PATH)
 
+    # 初始化日志文件
+    if not os.path.exists(config.LOG_PATH):
+        os.makedirs(config.LOG_PATH)
+    open(config.ASSIGN_TASKS_LOG_PATH, 'w').close()
+    open(config.ONEFORALL_LOG_PATH, 'w').close()
+    open(config.HTTPX_LOG_PATH, 'w').close()
+    open(config.SCANINFO_LOG_PATH, 'w').close()
+    open(config.XRAY_LOG_PATH, 'w').close()
+    open(config.CRAWLERGO_LOG_PATH, 'w').close()
+
+
 
     if os.environ.get('WERKZEUG_RUN_MAIN') == 'true':
         logo()
