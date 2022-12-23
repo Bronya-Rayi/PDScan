@@ -24,7 +24,7 @@ docker run --init -d -p 8888:8888 pdscan
 
 ### 自行构建docker
 
-为了减少git存储大小，请各位自行下载工具放置tools目录，目录结构如下：
+请自行下载工具放置tools目录，目录结构如下：
 
 ```bash
 ├─chrome
