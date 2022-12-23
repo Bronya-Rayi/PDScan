@@ -1,0 +1,81 @@
+{
+    "type": "page",
+    "title": "setting",
+    "body": [
+      {
+        "type": "tabs",
+        "tabs": [
+          {
+            "title": "用户设置",
+            "body": [
+              {
+                "type": "form",
+                "id": "u:9517dfa4f11b",
+                "title": "",
+                "body": [
+                  {
+                    "label": "旧密码",
+                    "type": "input-password",
+                    "name": "old_password",
+                    "id": "u:9a9c25a5bc41",
+                    "required": true,
+                    "validations": {
+                    },
+                    "validationErrors": {
+                    },
+                    "showCounter": false
+                  },
+                  {
+                    "type": "input-password",
+                    "label": "新密码",
+                    "name": "new_password",
+                    "id": "u:51e30f52da99",
+                    "required": true,
+                    "validations": {
+                      "minLength": 8
+                    },
+                    "validationErrors": {
+                      "minLength": "密码长度必须大于8"
+                    },
+                    "showCounter": false
+                  },
+                  {
+                    "type": "input-password",
+                    "label": "重复新密码",
+                    "name": "new_password_2",
+                    "id": "u:8e80f04d1281",
+                    "required": true,
+                    "validations": {
+                      "minLength": 8
+                    },
+                    "validationErrors": {
+                      "minLength": "密码长度必须大于8"
+                    },
+                    "showCounter": false
+                  }
+                ],
+                "api": {
+                  "url": "/api/v1/auth/chpasswd",
+                  "method": "post",
+                  "messages": {
+                  },
+                  "dataType": "json"
+                }
+              }
+            ],
+            "id": "u:f2dca1669a86"
+          }
+        ],
+        "id": "u:9e0536660a92"
+      }
+    ],
+    "id": "u:c28268d41319",
+    "pullRefresh": {
+      "disabled": true
+    },
+    "regions": [
+      "body"
+    ],
+    "asideResizor": false,
+    "className": "m-xs"
+  }

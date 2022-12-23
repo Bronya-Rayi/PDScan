@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="UTF-8" />
+    <title>PDScan</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1"
+    />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="stylesheet" href="/sdk/sdk.css" />
+    <link rel="stylesheet" href="/sdk/helper.css" />
+    <link rel="stylesheet" href="/sdk/iconfont.css" />
+    <style>
+      html,
+      body,
+      .app-wrapper {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root" class="app-wrapper"></div>
+    <script src="/sdk/sdk.js"></script>
+    <script type="text/javascript">
+      (function () {
+        let amis = amisRequire("amis/embed");
+        // 通过替换下面这个配置来生成不同页面
+        let amisJSON = {
+          type: "page",
+          title: "",
+          body: [
+            {
+              type: "flex",
+              className: "p-1",
+              items: [
+                {
+                  type: "wrapper",
+                  body: [],
+                  size: "xs",
+                  style: {
+                    position: "static",
+                    display: "block",
+                    flex: "0 0 auto",
+                    flexBasis: "auto",
+                    overflowX: "auto",
+                  },
+                  isFixedHeight: false,
+                  isFixedWidth: false,
+                  id: "u:efea0f76e7aa",
+                },
+                {
+                  type: "wrapper",
+                  size: "xs",
+                  style: {
+                    position: "static",
+                    display: "block",
+                    flex: "1 1 auto",
+                    flexGrow: 1,
+                    flexBasis: "auto",
+                  },
+                  isFixedHeight: false,
+                  isFixedWidth: false,
+                  id: "u:37a4d364c71d",
+                  body: [
+                    {
+                      type: "tpl",
+                      tpl: '<blockquote>\n<h1 style="text-align: center;"><span style="background-color: rgb(255, 255, 255); color: rgb(35, 111, 161);">系统登录</span></h1>\n</blockquote>',
+                      inline: true,
+                      id: "u:9c97311b8fe5",
+                    },
+                  ],
+                },
+                {
+                  type: "wrapper",
+                  body: [],
+                  size: "xs",
+                  style: {
+                    position: "static",
+                    display: "block",
+                    flex: "0 0 auto",
+                    flexBasis: "auto",
+                    overflowX: "auto",
+                  },
+                  isFixedHeight: false,
+                  isFixedWidth: false,
+                  id: "u:de6a0056f444",
+                },
+              ],
+              style: {
+                position: "static",
+              },
+              direction: "row",
+              justify: "flex-start",
+              alignItems: "stretch",
+              id: "u:405183d609c0",
+            },
+            {
+              type: "flex",
+              className: "p-1",
+              items: [
+                {
+                  type: "wrapper",
+                  body: [],
+                  size: "xs",
+                  style: {
+                    position: "static",
+                    display: "block",
+                    flex: "1 1 auto",
+                    flexGrow: 1,
+                    flexBasis: "auto",
+                  },
+                  isFixedHeight: false,
+                  isFixedWidth: false,
+                  id: "u:6e922f987437",
+                },
+                {
+                  type: "wrapper",
+                  body: [
+                    {
+                      type: "form",
+                      redirect: "/index.html",
+                      title: "",
+                      body: [
+                        {
+                          label: "用户名",
+                          type: "input-text",
+                          name: "username",
+                          id: "u:91a06dd142b5",
+                          required: true,
+                        },
+                        {
+                          type: "input-password",
+                          label: "密码",
+                          name: "password",
+                          id: "u:9089e733baac",
+                          showCounter: false,
+                          required: true,
+                        },
+                      ],
+                      api: {
+                        url: "/api/v1/auth/login",
+                        method: "post",
+                        messages: {
+                          success: "登陆成功",
+                          failed: "登陆失败",
+                        },
+                        dataType: "json"
+                      },
+                      id: "u:db9203fe6f07",
+                    },
+                  ],
+                  size: "xs",
+                  style: {
+                    position: "static",
+                    display: "block",
+                    flex: "1 1 auto",
+                    flexGrow: 1,
+                    flexBasis: "auto",
+                  },
+                  isFixedHeight: false,
+                  isFixedWidth: false,
+                  id: "u:a60d21b2df5b",
+                },
+                {
+                  type: "wrapper",
+                  body: [],
+                  size: "xs",
+                  style: {
+                    position: "static",
+                    display: "block",
+                    flex: "1 1 auto",
+                    flexGrow: 1,
+                    flexBasis: "auto",
+                  },
+                  isFixedHeight: false,
+                  isFixedWidth: false,
+                  id: "u:663269d5544a",
+                },
+              ],
+              style: {
+                position: "static",
+              },
+              direction: "row",
+              justify: "flex-start",
+              alignItems: "stretch",
+              id: "u:cb4a22dde62c",
+            },
+          ],
+          id: "u:dc37b39801d1",
+          aside: [],
+          asideResizor: false,
+          pullRefresh: {
+            disabled: true,
+          },
+          asideSticky: false,
+        };
+        let amisScoped = amis.embed("#root", amisJSON);
+      })();
+    </script>
+  </body>
+</html>

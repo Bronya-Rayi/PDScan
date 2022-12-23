@@ -14,6 +14,47 @@
 
 ## 安装
 
+现成docker：
+
+```bash
+docker pull bronyarayi/pdscan
+
+docker run --init -d -p 8888:8888 pdscan
+```
+
+### 自行构建docker
+
+为了减少git存储大小，请各位自行下载工具放置tools目录，目录结构如下：
+
+```bash
+├─chrome
+│      chromedriver_linux64.zip
+│      google-chrome-stable_current_amd64.deb
+（chrome请自行安装）
+│
+├─crawlergo
+│      crawlergo
+│
+├─httpx
+│  │  httpx
+│  │
+│  └─results
+├─oneforall
+（直接在tools目录下git clone 即可）
+├─scaninfo
+│  │  scaninfo
+│  │
+│  └─results
+│          portscan_result.txt
+│
+└─xray
+        config.yaml
+        module.xray.yaml
+        plugin.xray.yaml
+        xray （二进制文件请更名）
+        xray.yaml
+```
+
 Linux Only
 
 理论上Windows也行，但是配环境太麻烦懒得弄了
@@ -24,41 +65,42 @@ docker build . -t pdscan
 docker run --init -d -p 8888:8888 pdscan
 ```
 
+
+
 ## 使用
 
-默认密码：`admin/123456`
+默认密码：`admin/123123123`
 
-![image-20220831145426680](.assets/.README.assets/image-20220831145426680.png)
+![image-20221223122118115](.assets/.README.assets/image-20221223122118115.png)
+
 
 ### 添加任务
 
-![image-20220831144813376](.assets/.README.assets/image-20220831144813376.png)
+![image-20221223122156036](.assets/.README.assets/image-20221223122156036.png)
 
 查看任务状态
 
-![image-20220831145254447](.assets/.README.assets/image-20220831145254447.png)
+![image-20221223122227998](.assets/.README.assets/image-20221223122227998.png)
 
 ### 任务详情
 
 均可导出csv，若想导出全部数据，先查询99999条（后端懒得写了）
 
-子域名
-
-![image-20220831145010062](.assets/.README.assets/image-20220831145010062.png)
-
-存活站点
-
-![image-20220831145543744](.assets/.README.assets/image-20220831145543744.png)
-
-Xray扫描结果
-
-![image-20220831150559471](.assets/.README.assets/image-20220831150559471.png)
-
-## 项目所需的程序
+![image-20221223122948608](.assets/.README.assets/image-20221223122948608.png)
 
 
-Web框架 Pear Admin Flask
-https://gitee.com/pear-admin/pear-admin-flask/tree/mini/
+
+内嵌xray报告
+
+![image-20221223145710029](.assets/.README.assets/image-20221223145710029.png)
+
+
+
+
+
+
+
+## Github链接
 
 子域名探测 OneForall
 https://github.com/shmilylty/OneForAll

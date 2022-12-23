@@ -11,7 +11,7 @@ http:
   read_timeout: 10                      # 读取 http 响应的超时时间，不可太小，否则会影响到 sql 时间盲注的判断
   max_conns_per_host: 50                # 同一 host 最大允许的连接数，可以根据目标主机性能适当增大
   enable_http2: false                   # 是否启用 http2, 开启可以提升部分网站的速度，但目前不稳定有崩溃的风险
-  fail_retries: 1                       # 请求失败的重试次数，0 则不重试
+  fail_retries: 0                       # 请求失败的重试次数，0 则不重试
   max_redirect: 5                       # 单个请求最大允许的跳转数
   max_resp_body_size: 2097152           # 最大允许的响应大小, 默认 2M
   max_qps: 500                          # 每秒最大请求数
@@ -28,7 +28,7 @@ http:
   - MOVE
   - PROPFIND
   headers:
-    User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.66 Safari/537.36 Edg/103.0.1264.44
+    User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36 Edg/108.0.1462.54
     # Cookie: key=value
 
 # 漏洞探测的插件配置
@@ -38,6 +38,7 @@ plugins:
     enabled: true
     detect_cors_header_config: true     # 检查 cors 相关配置
     detect_server_error_page: true      # 检查服务器错误信息
+    detect_phpinfo: true                # 检查响应是否包含phpinfo
     detect_system_path_leak: false      # 检查响应是否包含系统路径泄露
     detect_outdated_ssl_version: false  # 检查 ssl 版本问题
     detect_http_header_config: false    # 检查 http 安全相关 header 是否配置
@@ -58,6 +59,7 @@ plugins:
     enabled: true
     depth: 1                            # 检测深度，定义 http://t.com/a/ 深度为 1, http://t.com/a 深度为 0
     dictionary: ""                      # 自定义检测字典, 配置后将与内置字典**合并**
+    exclude_dir: []                     # 想要排除的内部的扫描category，例如["sensitive/crossdomain","system/key"]
   fastjson:
     enabled: true
   jsonp:
@@ -73,12 +75,16 @@ plugins:
                                         # 也可使用 --poc 仅运行 指定的内置或本地 poc，进行测试。
                                         # 例如，可使用如下命令，仅运行当前目录下的 poc 且 不运行内置 poc 进行测试：
                                         # webscan -poc ./poc-* -url http://example.com
+    poc_tags:                           # 为POC添加tag, 然后就可以使用--tags来选择启动哪些POC。poc-yaml-test为poc的name，[]中的内容为该POC对应的标签
+      poc-yaml-test: ["HW", "ST"]
+      poc-yaml-test-1: ["ST"]                       
   redirect:
     enabled: true
   shiro:
     enabled: true
     cookie_name: rememberMe             # 默认使用哪个 shiro cookie name
-    aes_key: []                         # 自定义 shiro key，配置后将与内置 100 key 做合并
+    aes_key: []                         # 自定义 shiro key，配置后将与内置 116 key 做合并
+    aes_key_file:                       # 自定义存储 shiro key 的文件路径，配置后将自动加载文件中的key
   sqldet:
     enabled: true
     boolean_based_detection: true       # 是否检测布尔盲注
@@ -141,8 +147,8 @@ mitm:
     hostname_disallowed:                # 不允许访问的 Hostname，支持格式如 t.com、*.t.com、1.1.1.1、1.1.1.1/24、1.1-4.1.1-8
     - '*google*'
     - '*github*'
-    - '*.gov.cn'
-
+    - '*chaitin*'
+    - '*.xray.cool'
     port_allowed: []                    # 允许访问的端口, 支持的格式如: 80、80-85
     port_disallowed: []                 # 不允许访问的端口, 支持的格式如: 80、80-85
     path_allowed: []                    # 允许访问的路径，支持的格式如: test、*test*
@@ -171,8 +177,8 @@ basic-crawler:
     hostname_disallowed:                # 不允许访问的 Hostname，支持格式如 t.com、*.t.com、1.1.1.1、1.1.1.1/24、1.1-4.1.1-8
     - '*google*'
     - '*github*'
-    - '*.gov.cn'
-
+    - '*chaitin*'
+    - '*.xray.cool'
     port_allowed: []                    # 允许访问的端口, 支持的格式如: 80、80-85
     port_disallowed: []                 # 不允许访问的端口, 支持的格式如: 80、80-85
     path_allowed: []                    # 允许访问的路径，支持的格式如: test、*test*
