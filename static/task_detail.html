@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="UTF-8" />
+    <title>PDScan</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1"
+    />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <link rel="stylesheet" href="/sdk/sdk.css" />
+    <link rel="stylesheet" href="/sdk/helper.css" />
+    <link rel="stylesheet" href="/sdk/iconfont.css" />
+    <style>
+      html,
+      body,
+      .app-wrapper {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root" class="app-wrapper"></div>
+    <script src="/sdk/sdk.js"></script>
+    <script type="text/javascript">
+      (function () {
+        let amis = amisRequire("amis/embed");
+        // 通过替换下面这个配置来生成不同页面
+        let amisJSON = {
+          type: "crud",
+          syncLocation: false,
+          api: {
+            method: "get",
+            url: "/api/v1/site/list/${task_id}",
+          },
+          columns: [
+            {
+              type: "text",
+              label: "ID",
+              name: "id",
+              id: "u:87016a42048a",
+            },
+            {
+              type: "text",
+              name: "url",
+              id: "u:7b90c794e880",
+              placeholder: "-",
+              label: "URL",
+            },
+            {
+              type: "text",
+              name: "ip",
+              id: "u:aba978eaf315",
+              placeholder: "-",
+              label: "IP",
+            },
+            {
+              type: "text",
+              name: "status_code",
+              id: "u:6fdbe3b4df6d",
+              placeholder: "-",
+              label: "状态码",
+            },
+            {
+              type: "text",
+              name: "title",
+              id: "u:c0d9e6759c8e",
+              placeholder: "-",
+              label: "网站标题",
+            },
+            {
+              type: "text",
+              name: "finger",
+              id: "u:c91f6c88b8be",
+              placeholder: "-",
+              label: "指纹",
+            },
+            {
+              type: "operation",
+              label: "操作",
+              buttons: [],
+              id: "u:2ced0dc02d6f",
+            },
+          ],
+          bulkActions: [],
+          itemActions: [],
+          features: ["filter"],
+          filterColumnCount: 3,
+          id: "u:fd2203582ed9",
+          perPageAvailable: [10],
+          messages: {},
+          headerToolbar: [
+            {
+              type: "export-csv",
+            },
+          ],
+          alwaysShowPagination: true,
+          perPage: 20,
+          filter: {
+            title: "站点查询",
+            body: [
+              {
+                type: "input-text",
+                name: "url",
+                label: "URL",
+                id: "u:7606f9d387af",
+              },
+              {
+                type: "input-text",
+                label: "IP",
+                name: "ip",
+                id: "u:148a0452c4c1",
+              },
+              {
+                type: "input-text",
+                label: "状态码",
+                name: "status_code",
+                id: "u:50915a64475f",
+              },
+              {
+                type: "input-text",
+                label: "标题",
+                name: "title",
+                id: "u:2efe68cd0a8f",
+              },
+              {
+                type: "input-text",
+                label: "指纹",
+                name: "finger",
+                id: "u:0b627d5d7334",
+              },
+            ],
+            id: "u:c9564a93b159",
+            submitText: "提交",
+          },
+        };
+        let amisScoped = amis.embed("#root", amisJSON);
+      })();
+    </script>
+  </body>
+</html>
