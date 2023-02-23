@@ -1,15 +1,10 @@
 import json
-import logging
 import os
 import shlex
 import subprocess
 import threading
 import time
-from email.mime import application
-from re import A
 
-import IPy
-import tld
 from app.models import DomainModels, IPModels, SiteModels, TaskModels
 
 import config
@@ -472,92 +467,85 @@ class TaskQueue(object):
             self.vulscan = False
             
         try:
-            # 开始网站查找任务
+            # 开始网站查找任务，注意任务一开始的域名和ip也要加进去，为了后期漏扫做准备
             subdomain_db = DomainModels.query.filter_by(task_id = webfind_task.task_id)
+            task_target_domain_list = json.loads(webfind_task.task_target_domain)
+            task_target_ip_list = json.loads(webfind_task.task_target_ip)
+            subdomain_list = []
             if subdomain_db.count() > 0:
                 subdomain_db = subdomain_db.all()
                 subdomain_list = [subdomain.domain for subdomain in subdomain_db]
-                target_file = os.path.join(config.HTTPX_PATH, webfind_task.task_id + '.txt')
-                with open(target_file,'w') as f:
-                    for subdomain in subdomain_list:
-                        f.write(subdomain + '\n')
+            
+            site_list = subdomain_list + task_target_domain_list + task_target_ip_list
+            site_list = list(set(site_list))
 
-                result_file = os.path.join(config.HTTPX_RESULTS_PATH, webfind_task.task_id + '.json')
-                # 清除站点扫描的日志
-                os.system("echo '' > {}".format(config.HTTPX_LOG_PATH))
-                cmd = config.HTTPX_CMD.format(target_file = target_file, result_file = result_file)
-                cmd_result = out_file_cmd_exec(cmd, config.HTTPX_LOG_PATH)
-                if cmd_result == 0:
-                    logger.info("开始读取网站查找结果")
-                    webfind_result = []
-                    with open(result_file, 'r', encoding='utf-8') as f:
-                        for i in f.readlines():
-                            webfind_result.append(json.loads(i))
-                    # 将结果插入数据库
-                    if len(webfind_result) == 0:
-                        # 根据下一步是否有漏扫任务，更新任务状态
-                        if self.vulscan:
-                            webfind_task.task_running_module = 'vulscan'
-                            webfind_task.task_status = 'Waiting'
-                            db.session.commit()
-                            logger.info("[+] 任务：{} 的网站查找入库完成，但没有发现子域名或站点，开始漏洞扫描".format(webfind_task.task_name))
-                            return True
-                        else:
-                            webfind_task.task_running_module = 'webfind_finish'
-                            webfind_task.task_status = 'Finish'
-                            db.session.commit()
-                            logger.error("[!] 任务：{} 的网站查找入库完成，但没有发现子域名或站点".format(webfind_task.task_name))
-                            return True
+            target_file = os.path.join(config.HTTPX_PATH, webfind_task.task_id + '.txt')
+            with open(target_file,'w') as f:
+                for site in site_list:
+                    f.write(site + '\n')
 
-                    for result in webfind_result:
-                        if 'title' not in result:
-                            result['title'] = ''
-                        if 'webserver' not in result:
-                            result['webserver'] = ''
-                        
-                        site_db = SiteModels(
-                            task_id = webfind_task.task_id,
-                            url = result['url'],
-                            ip = result['host'],
-                            status_code = result['status_code'],
-                            title = result['title'],
-                            finger = result['webserver']
-                        )
-                        db.session.add(site_db)
-                        db.session.commit()
+            result_file = os.path.join(config.HTTPX_RESULTS_PATH, webfind_task.task_id + '.json')
+            # 清除站点扫描的日志
+            os.system("echo '' > {}".format(config.HTTPX_LOG_PATH))
+            cmd = config.HTTPX_CMD.format(target_file = target_file, result_file = result_file)
+            cmd_result = out_file_cmd_exec(cmd, config.HTTPX_LOG_PATH)
+            if cmd_result == 0:
+                logger.info("开始读取网站查找结果")
+                webfind_result = []
+                with open(result_file, 'r', encoding='utf-8') as f:
+                    for i in f.readlines():
+                        webfind_result.append(json.loads(i))
+                # 将结果插入数据库
+                if len(webfind_result) == 0:
                     # 根据下一步是否有漏扫任务，更新任务状态
                     if self.vulscan:
                         webfind_task.task_running_module = 'vulscan'
                         webfind_task.task_status = 'Waiting'
                         db.session.commit()
-                        logger.info("[+] 任务：{} 的网站查找入库完成，开始漏洞扫描".format(webfind_task.task_name))
+                        logger.info("[+] 任务：{} 的网站查找入库完成，但没有发现子域名或站点，开始漏洞扫描".format(webfind_task.task_name))
                         return True
                     else:
                         webfind_task.task_running_module = 'webfind_finish'
                         webfind_task.task_status = 'Finish'
                         db.session.commit()
-                        logger.info("[+] 任务：{} 的网站查找完成".format(webfind_task.task_name))
+                        logger.error("[!] 任务：{} 的网站查找入库完成，但没有发现子域名或站点".format(webfind_task.task_name))
                         return True
-                else:
-                    webfind_task.task_running_module = 'webfind_error'
-                    webfind_task.task_status = 'Error'
+
+                for result in webfind_result:
+                    if 'title' not in result:
+                        result['title'] = ''
+                    if 'webserver' not in result:
+                        result['webserver'] = ''
+                    
+                    site_db = SiteModels(
+                        task_id = webfind_task.task_id,
+                        url = result['url'],
+                        ip = result['host'],
+                        status_code = result['status_code'],
+                        title = result['title'],
+                        finger = result['webserver']
+                    )
+                    db.session.add(site_db)
                     db.session.commit()
-                    logger.error("[!] 任务：{} 的网站查找入库失败，运行httpx期间报错".format(webfind_task.task_name))
-                    return False
-            else:
                 # 根据下一步是否有漏扫任务，更新任务状态
                 if self.vulscan:
                     webfind_task.task_running_module = 'vulscan'
                     webfind_task.task_status = 'Waiting'
                     db.session.commit()
-                    logger.info("[!] 任务：{} 的网站查找入库完成，但没有发现子域名或站点，开始漏洞扫描".format(webfind_task.task_name))
+                    logger.info("[+] 任务：{} 的网站查找入库完成，开始漏洞扫描".format(webfind_task.task_name))
                     return True
                 else:
                     webfind_task.task_running_module = 'webfind_finish'
                     webfind_task.task_status = 'Finish'
                     db.session.commit()
-                    logger.error("[!] 任务：{} 的网站查找入库完成，但没有发现子域名或站点".format(webfind_task.task_name))
+                    logger.info("[+] 任务：{} 的网站查找完成".format(webfind_task.task_name))
                     return True
+            else:
+                webfind_task.task_running_module = 'webfind_error'
+                webfind_task.task_status = 'Error'
+                db.session.commit()
+                logger.error("[!] 任务：{} 的网站查找入库失败，运行httpx期间报错".format(webfind_task.task_name))
+                return False
 
 
         except Exception as e:
@@ -577,8 +565,18 @@ class TaskQueue(object):
         xray_thread = threading.Thread(target=out_file_cmd_exec, args=(cmd, config.XRAY_LOG_PATH,))
         xray_thread.start()
         # 将xray的结果文件目录添加至数据库
-        task_xray_result = "/xray_results/" + result_file_name
-        TaskModels.query.filter_by(task_id = vulscan_task.task_id).update({"task_xray_result": task_xray_result})
+        task_xray_result_now = "/xray_results/" + result_file_name
+
+        # 查找以前数据库中记录的xray结果文件，将其与当前结果文件合并成列表
+        task_xray_result = vulscan_task.task_xray_result
+        if task_xray_result:
+            task_xray_result = json.loads(task_xray_result)
+            task_xray_result.append(task_xray_result_now)
+        else:
+            task_xray_result = [task_xray_result_now]
+
+
+        TaskModels.query.filter_by(task_id = vulscan_task.task_id).update({"task_xray_result": json.dumps(task_xray_result)})
         db.session.commit()
         
 
@@ -610,6 +608,7 @@ class TaskQueue(object):
                 vulscan_task.task_status = 'Error'
                 logger.error("[!] 任务：{} 没有站点，无法进行漏洞扫描".format(vulscan_task.task_name))
                 db.session.commit()
+                self.killVulscan()
                 return False
             for site in site_db:
                 logger.info("[+] 正在爬取：{}".format(site.url))
@@ -626,6 +625,7 @@ class TaskQueue(object):
                     vulscan_task.task_status = 'Error'
                     logger.error("[!] 任务：{} 漏洞扫描失败,crawlergo运行期间出错".format(vulscan_task.task_name))
                     db.session.commit()
+                    self.killVulscan()
                     return False
                 logger.info("[+] 漏洞扫描完成：{} ，开始进行下一项漏扫".format(site.url))
             # 漏扫结束
@@ -636,6 +636,7 @@ class TaskQueue(object):
             vulscan_task.task_status = 'Finish'
             db.session.commit()
             logger.info("[+] 任务：{} 的漏洞扫描完成".format(vulscan_task.task_name))
+            self.killVulscan()
             return True
                 
         except Exception as e:
@@ -644,5 +645,6 @@ class TaskQueue(object):
             db.session.commit()
             logger.error(e)
             logger.error("[!] 任务：{} 的漏洞扫描出现错误".format(vulscan_task.task_name))
+            self.killVulscan()
             return False
             

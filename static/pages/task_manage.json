@@ -99,6 +99,16 @@
                     "trueValue": true,
                     "id": "u:b3c8fb30f1aa",
                     "value": false
+                  },
+                  {
+                    "type": "switch",
+                    "label": "只进行漏扫",
+                    "option": "开启后将跳过子域名探测和端口扫描，直接进行漏扫",
+                    "name": "task_running_module",
+                    "falseValue": "waitting",
+                    "trueValue": "webfind",
+                    "id": "u:b3c8fb30f1aa",
+                    "value": "waitting"
                   }
                 ],
                 "id": "u:e4da09ff8e3c"

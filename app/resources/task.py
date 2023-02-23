@@ -63,7 +63,7 @@ class TaskListResource(Resource):
         taskModel.task_name = request.json.get(
             'task_name').strip().replace(' ', '_')
         taskModel.task_target = str(task_target)
-        taskModel.task_running_module = 'Waiting'
+        taskModel.task_running_module = request.json.get('task_running_module')
         taskModel.task_status = 'Waiting'
         taskModel.task_start_time = time.strftime(
             "%Y-%m-%d %H:%M:%S", time.localtime())
@@ -72,7 +72,7 @@ class TaskListResource(Resource):
         try:
             db.session.add(taskModel)
             db.session.commit()
-            TaskManager(task_id, taskModel.task_name, task_target)
+            TaskManager(task_id, taskModel.task_name, task_target,taskModel.task_running_module)
             return success_api(message='添加成功')
         except Exception as e:
             print(str(e))
@@ -290,7 +290,15 @@ class ShowVulscanResult(Resource):
             return fail_api(message="需要指定任务id")
         else:
             vulscan_result = TaskModels.query.filter_by(task_id=task_id).first().task_xray_result
-            data = {
-                'xray_result_page': vulscan_result
+            if vulscan_result == None:
+                return fail_api(message="未扫描到漏洞")
+            vulscan_result = json.loads(vulscan_result)
+            data = [
+                {
+                    'xray_result_url': item,
+                } for item in vulscan_result
+            ]
+            out_data = {
+                "items": data
             }
-            return success_api(data=data)
+            return success_api(data=out_data)

@@ -368,23 +368,24 @@
           "title": "Web扫描",
           "body": [
             {
-              "type": "service",
-              "body": [
+              "type": "crud",
+              "syncLocation": false,
+              "api": {
+                "method": "get",
+                "url": "/api/v1/vulscan/list/${IF(ISEMPTY(task_id), 'all', task_id)}/",
+                "messages": {
+                  "failed": "任务ID不存在！"
+                }
+              },
+              "columns": [
                 {
-                  "type": "iframe",
-                  "src": "${xray_result_page}",
-                  "id": "u:423bce55310c",
-                  "width": "100vw",
-                  "height": "100vh"
+                  "name": "xray_result_url",
+                  "label": "xray结果链接",
+                  "type": "link",
+                  "id": "u:06ed61f714a5"
                 }
               ],
-              "id": "u:b49436375bbe",
-              "messages": {
-              },
-              "api": {
-                "url": "/api/v1/vulscan/list/${IF(ISEMPTY(task_id), 'all', task_id)}/",
-                "method": "get"
-              }
+              "id": "u:9c0dc3e52d51"
             }
           ],
           "id": "u:c42520850f85"
