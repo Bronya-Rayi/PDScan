@@ -8,6 +8,7 @@ import time
 from app.models import DomainModels, IPModels, SiteModels, TaskModels
 
 import config
+import tld
 from app.utils import db
 from app.utils.log import logger
 
