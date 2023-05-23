@@ -58,17 +58,26 @@ class TaskListResource(Resource):
 
         task_target = request.json.get('task_target')
         task_target = json.dumps(task_target.split('\n'))
+        task_module_list = request.json.get('task_module_list')
+        # 如果task_module_list最后面有逗号，去掉
+        task_module_list = task_module_list.rstrip(',').replace(' ', '')
+        # 去掉空格
 
+        # 设置task_next_module为task_module_list的第一项
+        task_next_module = task_module_list.split(',')[0]
+        
         taskModel.task_id = task_id
         taskModel.task_name = request.json.get(
             'task_name').strip().replace(' ', '_')
         taskModel.task_target = str(task_target)
-        taskModel.task_running_module = request.json.get('task_running_module')
-        taskModel.task_status = 'Waiting'
+        taskModel.task_module_list = task_module_list
+        taskModel.task_running_module ='waiting'
+        taskModel.task_next_module = task_next_module
+        taskModel.task_status = 'waiting'
         taskModel.task_start_time = time.strftime(
             "%Y-%m-%d %H:%M:%S", time.localtime())
         taskModel.task_port_limit = request.json.get('port_limit')
-        taskModel.task_vulscan = request.json.get('vulscan')
+
         try:
             db.session.add(taskModel)
             db.session.commit()
@@ -111,11 +120,11 @@ class TaskStatusResource(Resource):
     def get(self):
         try:
             if request.args.get('task_status') == 'Paused':
-                TaskModels.query.filter_by(task_id=request.args.get('task_id')).update({'task_status': 'Running'})
+                TaskModels.query.filter_by(task_id=request.args.get('task_id')).update({'task_status': 'running'})
                 db.session.commit()
                 logger.info("[+] 任务{}启动成功".format(request.args.get('task_id')))
                 return success_api('启动成功')
-            elif request.args.get('task_status') == 'Running': 
+            elif request.args.get('task_status') == 'running': 
                 task_running_module = TaskManager.stopTask(request.args.get('task_id'))
                 # 任务中断时会造成任务记录为error，这里需要再更新下为Paused
                 time.sleep(2)
@@ -127,7 +136,7 @@ class TaskStatusResource(Resource):
                 task_running_module = TaskManager.stopTask(request.args.get('task_id'))
                 # 更新数据库中的任务状态
                 time.sleep(2)
-                TaskModels.query.filter_by(task_id=request.args.get('task_id')).update({'task_status': 'Waiting', 'task_running_module': task_running_module})
+                TaskModels.query.filter_by(task_id=request.args.get('task_id')).update({'task_status': 'waiting', 'task_running_module': task_running_module})
                 db.session.commit()
                 logger.info("[+] 任务{}重启成功".format(request.args.get('task_id')))
                 return success_api('重启成功')

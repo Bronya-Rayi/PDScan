@@ -3,7 +3,7 @@ import os
 from flask import Flask, Blueprint
 from app.utils import init_utils
 import config
-
+from celery import Celery
 
 api_bp: Blueprint = Blueprint('api', __name__, url_prefix='/api/v1')
 
@@ -61,12 +61,42 @@ def create_app() -> Flask:
     open(config.SCANINFO_LOG_PATH, 'w').close()
     open(config.XRAY_LOG_PATH, 'w').close()
     open(config.CRAWLERGO_LOG_PATH, 'w').close()
+
+    # 初始化随机证书
+    # 先删除所有存在的证书
+    os.system(f"rm {config.CERT_KEY_PATH}")
+    os.system(f"rm {config.CERT_PATH}")
+    os.system(f"rm {config.CSR_PATH}")
+
+    # 通过csr文件生成证书，避免交互
+    # 生成私钥和csr文件
+    os.system('openssl req -new -newkey rsa:2048 -nodes -out {csr_path} -keyout {cert_key_path} -subj "/C=CN/ST=GD/L=SZ/O=Acme, Inc./CN=example.com"'.format(csr_path=config.CSR_PATH,cert_key_path=config.CERT_KEY_PATH))
+    # 生成证书
+    os.system('openssl x509 -req -days 3650 -in {csr_path} -signkey {cert_key_path} -out {cert_path}'.format(csr_path=config.CSR_PATH,cert_key_path=config.CERT_KEY_PATH,cert_path=config.CERT_PATH))
+
     
 
     if os.environ.get('WERKZEUG_RUN_MAIN') == 'true':
         logo()
 
+
+
     return app
+
+def create_celery(app):
+    celery = Celery("pdscan_celery",broker='redis://localhost:6379/0', backend='redis://localhost:6379/1')
+
+    TaskBase = celery.Task
+
+    class ContextTask(TaskBase):
+        abstract = True
+
+        def __call__(self, *args, **kwargs):
+            with app.app_context():
+                return TaskBase.__call__(self, *args, **kwargs)
+
+    celery.Task = ContextTask
+    return celery
 
 
 def logo():

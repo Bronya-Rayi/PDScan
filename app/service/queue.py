@@ -188,8 +188,8 @@ class TaskQueue(object):
         # time.sleep(10)
         with self.app.app_context():
             # logger.info("子域名线程启动成功")
-            domain_task = TaskModels.query.filter_by(task_status='Running',task_running_module='subdomain')
-            doamin_task_waiting = TaskModels.query.filter_by(task_status='Waiting',task_running_module='subdomain')
+            domain_task = TaskModels.query.filter_by(task_status='running',task_running_module='subdomain')
+            doamin_task_waiting = TaskModels.query.filter_by(task_status='waiting',task_running_module='subdomain')
             # print(domain_task.count())
             if domain_task.count() == 1:
                 domain_task = domain_task.first()
@@ -200,7 +200,7 @@ class TaskQueue(object):
             elif doamin_task_waiting.count() > 0:
                 # 读取等待中的任务，并且更新任务状态
                 doamin_task_waiting = doamin_task_waiting.first()
-                doamin_task_waiting.task_status = 'Running'
+                doamin_task_waiting.task_status = 'running'
                 db.session.commit()
                 logger.info("[+] 队列任务：{} 排队结束，更新状态为正在运行".format(doamin_task_waiting.task_name))
                 domain_task = doamin_task_waiting
@@ -214,8 +214,8 @@ class TaskQueue(object):
         # 查询出需要进行端口扫描任务的任务
         with self.app.app_context():
             # logger.info("端口扫描线程启动成功")
-            portscanTask = TaskModels.query.filter_by(task_status='Running',task_running_module='portscan')
-            portscanTask_waiting = TaskModels.query.filter_by(task_status='Waiting',task_running_module='portscan')
+            portscanTask = TaskModels.query.filter_by(task_status='running',task_running_module='portscan')
+            portscanTask_waiting = TaskModels.query.filter_by(task_status='waiting',task_running_module='portscan')
             if portscanTask.count() == 1:
                 portscanTask = portscanTask.first()
                 logger.info("[+] 队列读取完成，开始任务：{} 的端口扫描".format(portscanTask.task_name))
@@ -225,7 +225,7 @@ class TaskQueue(object):
             elif portscanTask_waiting.count() > 0:
                 # 读取等待中的任务，并且更新任务状态
                 portscanTask_waiting = portscanTask_waiting.first()
-                portscanTask_waiting.task_status = 'Running'
+                portscanTask_waiting.task_status = 'running'
                 db.session.commit()
                 portscan_task = portscanTask_waiting
                 logger.info("[+] 队列读取完成，开始任务：{} 的端口扫描".format(portscan_task.task_name))
@@ -239,8 +239,8 @@ class TaskQueue(object):
         # 查询出需要进行网站查找任务的任务
         with self.app.app_context():
             # logger.info("网站查找线程启动成功")
-            webfindTask = TaskModels.query.filter_by(task_status='Running',task_running_module='webfind')
-            webfindTask_waiting = TaskModels.query.filter_by(task_status='Waiting',task_running_module='webfind')
+            webfindTask = TaskModels.query.filter_by(task_status='running',task_running_module='webfind')
+            webfindTask_waiting = TaskModels.query.filter_by(task_status='waiting',task_running_module='webfind')
             if webfindTask.count() == 1:
                 webfindTask = webfindTask.first()
                 logger.info("[+] 队列读取完成，开始任务：{} 的网站查找".format(webfindTask.task_name))
@@ -250,7 +250,7 @@ class TaskQueue(object):
             elif webfindTask_waiting.count() > 0:
                 # 读取等待中的任务，并且更新任务状态
                 webfindTask_waiting = webfindTask_waiting.first()
-                webfindTask_waiting.task_status = 'Running'
+                webfindTask_waiting.task_status = 'running'
                 db.session.commit()
                 webfind_task = webfindTask_waiting
                 logger.info("[+] 队列读取完成，开始任务：{} 的网站查找".format(webfind_task.task_name))
@@ -262,8 +262,8 @@ class TaskQueue(object):
         # 查询出需要进行漏洞扫描任务的任务
         with self.app.app_context():
             # logger.info("漏洞扫描线程启动成功")
-            vulscanTask = TaskModels.query.filter_by(task_status='Running',task_running_module='vulscan')
-            vulscanTask_waiting = TaskModels.query.filter_by(task_status='Waiting',task_running_module='vulscan')
+            vulscanTask = TaskModels.query.filter_by(task_status='running',task_running_module='vulscan')
+            vulscanTask_waiting = TaskModels.query.filter_by(task_status='waiting',task_running_module='vulscan')
             if vulscanTask.count() == 1:
                 vulscanTask = vulscanTask.first()
                 logger.info("[+] 队列读取完成，开始任务：{} 的漏洞扫描".format(vulscanTask.task_name))
@@ -273,7 +273,7 @@ class TaskQueue(object):
             elif vulscanTask_waiting.count() > 0:
                 # 读取等待中的任务，并且更新任务状态
                 vulscanTask_waiting = vulscanTask_waiting.first()
-                vulscanTask_waiting.task_status = 'Running'
+                vulscanTask_waiting.task_status = 'running'
                 db.session.commit()
                 vulscan_task = vulscanTask_waiting
                 logger.info("[+] 队列读取完成，开始任务：{} 的漏洞扫描".format(vulscan_task.task_name))
@@ -317,7 +317,7 @@ class TaskQueue(object):
                 logger.info("[+] 域名：{} 的子域名查询入库成功".format(domain))
             # 子域名任务完成后，更新任务状态
             domain_task.task_running_module = 'portscan'
-            domain_task.task_status = 'Waiting'
+            domain_task.task_status = 'waiting'
             db.session.commit()
             logger.info("[+] 任务：{} 的子域名查询入库完成".format(domain_task.task_name))
             logger.info("[+] 任务：{} 进入端口扫描队列".format(domain_task.task_name))
@@ -449,7 +449,7 @@ class TaskQueue(object):
                     continue
             # 端口扫描任务完成后，更新任务状态
             portscan_task.task_running_module = 'webfind'
-            portscan_task.task_status = 'Waiting'
+            portscan_task.task_status = 'waiting'
             db.session.commit()
             logger.info("[+] 任务：{} 的端口扫描入库完成".format(portscan_task.task_name))
             logger.info("[+] 任务：{} 进入网站查询模块".format(portscan_task.task_name))
@@ -503,13 +503,13 @@ class TaskQueue(object):
                     # 根据下一步是否有漏扫任务，更新任务状态
                     if self.vulscan:
                         webfind_task.task_running_module = 'vulscan'
-                        webfind_task.task_status = 'Waiting'
+                        webfind_task.task_status = 'waiting'
                         db.session.commit()
                         logger.info("[+] 任务：{} 的网站查找入库完成，但没有发现子域名或站点，开始漏洞扫描".format(webfind_task.task_name))
                         return True
                     else:
                         webfind_task.task_running_module = 'webfind_finish'
-                        webfind_task.task_status = 'Finish'
+                        webfind_task.task_status = 'finish'
                         db.session.commit()
                         logger.error("[!] 任务：{} 的网站查找入库完成，但没有发现子域名或站点".format(webfind_task.task_name))
                         return True
@@ -533,13 +533,13 @@ class TaskQueue(object):
                 # 根据下一步是否有漏扫任务，更新任务状态
                 if self.vulscan:
                     webfind_task.task_running_module = 'vulscan'
-                    webfind_task.task_status = 'Waiting'
+                    webfind_task.task_status = 'waiting'
                     db.session.commit()
                     logger.info("[+] 任务：{} 的网站查找入库完成，开始漏洞扫描".format(webfind_task.task_name))
                     return True
                 else:
                     webfind_task.task_running_module = 'webfind_finish'
-                    webfind_task.task_status = 'Finish'
+                    webfind_task.task_status = 'finish'
                     db.session.commit()
                     logger.info("[+] 任务：{} 的网站查找完成".format(webfind_task.task_name))
                     return True
@@ -636,7 +636,7 @@ class TaskQueue(object):
             self.killVulscan()
             self.killCrawlergo()
             vulscan_task.task_running_module = 'vulscan_finish'
-            vulscan_task.task_status = 'Finish'
+            vulscan_task.task_status = 'finish'
             db.session.commit()
             logger.info("[+] 任务：{} 的漏洞扫描完成".format(vulscan_task.task_name))
             self.killVulscan()

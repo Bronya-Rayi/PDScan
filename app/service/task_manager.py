@@ -102,17 +102,17 @@ class TaskManager(object):
         '''
         # 先查询是否有子域名任务正在运行
         task_info = TaskModels.query.filter_by(
-            task_running_module='subdomain', task_status='Running').first()
+            task_running_module='subdomain', task_status='running').first()
         if task_info:
             logger.info("任务：%s 进入子域名查询队列" % self.task_name)
             # 先更新任务模组为子域名查询，然后任务状态为等待
             TaskModels.query.filter_by(task_id=self.task_id).update(
-                {'task_running_module': 'subdomain', 'task_status': 'Waiting'})
+                {'task_running_module': 'subdomain', 'task_status': 'waiting'})
         else:
             # 更新任务模组为自域名查询，状态为运行中
             logger.info("任务：%s 开始进行子域名查询" % self.task_name)
             TaskModels.query.filter_by(task_id=self.task_id).update(
-                {'task_running_module': 'subdomain', 'task_status': 'Running'})
+                {'task_running_module': 'subdomain', 'task_status': 'running'})
         db.session.commit()
 
     def startPortScanTask(self):
@@ -121,17 +121,17 @@ class TaskManager(object):
         '''
         # 先查询是否有端口扫描任务正在运行
         task_info = TaskModels.query.filter_by(
-            task_running_module='portscan', task_status='Running').first()
+            task_running_module='portscan', task_status='running').first()
         if task_info:
             logger.info("任务：%s 进入端口扫描队列" % self.task_name)
             # 先更新任务模组为端口扫描，然后任务状态为等待
             TaskModels.query.filter_by(task_id=self.task_id).update(
-                {'task_running_module': 'portscan', 'task_status': 'Waiting'})
+                {'task_running_module': 'portscan', 'task_status': 'waiting'})
         else:
             # 更新任务模组为端口扫描，状态为运行中
             logger.info("任务：%s 开始进行端口扫描" % self.task_name)
             TaskModels.query.filter_by(task_id=self.task_id).update(
-                {'task_running_module': 'portscan', 'task_status': 'Running'})
+                {'task_running_module': 'portscan', 'task_status': 'running'})
         db.session.commit()
 
     def startWebfindTask(self):
@@ -140,15 +140,15 @@ class TaskManager(object):
         '''
         # 先查询是否有web网站查找任务正在运行
         task_info = TaskModels.query.filter_by(
-            task_running_module='webfind', task_status='Running').first()
+            task_running_module='webfind', task_status='running').first()
         if task_info:
             logger.info("任务：%s 进入web网站查找队列" % self.task_name)
             # 先更新任务模组为web网站查找，然后任务状态为等待
             TaskModels.query.filter_by(task_id=self.task_id).update(
-                {'task_running_module': 'webfind', 'task_status': 'Waiting'})
+                {'task_running_module': 'webfind', 'task_status': 'waiting'})
         else:
             # 更新任务模组为web网站查找，状态为运行中
             logger.info("任务：%s 开始进行web网站查找" % self.task_name)
             TaskModels.query.filter_by(task_id=self.task_id).update(
-                {'task_running_module': 'webfind', 'task_status': 'Running'})
+                {'task_running_module': 'webfind', 'task_status': 'running'})
         db.session.commit()
