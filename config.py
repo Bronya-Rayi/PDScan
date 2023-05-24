@@ -15,6 +15,13 @@ CSR_PATH = os.path.join(os.path.dirname(os.path.abspath(__name__)), 'cert', 'ser
 LOG_LEVEL = logging.ERROR
 LOG_PATH = os.path.join(os.path.dirname(os.path.abspath(__name__)), 'log')
 
+worker_task_list = {
+    "oneforall": "None",
+    "httpx": "None",
+    "scaninfo": "None",
+    "xray_crawlergo": "None"
+}
+
 
 SYSTEM_STATUS_LOG_PATH = os.path.join(os.path.dirname(os.path.abspath(__name__)), 'log','system_status.log')
 

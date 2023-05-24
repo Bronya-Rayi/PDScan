@@ -1,17 +1,15 @@
-from PDScan import celery_app
 from app.models import TaskModels
-from app.utils import db
-from app.modules.test import oneforall_module
+from app.utils import db,success_api, fail_api
+from app.modules.tools import kill_xray_crawlergo, kill_httpx, kill_scaninfo, kill_oneforall
+from app.modules import oneforall_module, httpx_module, scaninfo_module, xray_crawlergo_module
+from PDScan import celery_app
+from config import worker_task_list
 import re
+import traceback
+import json
+import time
 # python3 -m celery -A app.celery_task.celery_tasks worker --loglevel=info
 # 创建Celery应用
-
-worker_task_list = {
-    "oneforall": "None",
-    "httpx": "None",
-    "scaninfo": "None",
-    "xray_crawlergo": "None"
-}
 
 def validate_task_id(string):
     pattern = r'^[a-fA-F0-9]{8}$'
@@ -65,7 +63,7 @@ def send_task():
     return
 
 # 自动分配模块
-@celery_app.task
+@celery_app.task(rate_limit='1/s')
 def do_task(module_name,task_id):
 
     print(f'[+] 任务ID：{task_id}，开始执行{module_name}任务')
@@ -94,11 +92,13 @@ def do_task(module_name,task_id):
         eval(module_func)
 
         # task_next_module为task_module_list中自身模块名对应模块的下一项，先判断目前运行的模块是否为最后一项
-        task_module_list = task.task_module_list.split(',')
+        task_module_list = json.loads(task.task_module_list)
         if task_module_list.index(task.task_running_module) == len(task_module_list) - 1:
             task.task_status = 'finish'
             task.task_running_module = 'finish'
             task.task_next_module = 'finish'
+            task.task_end_time = time.strftime(
+            "%Y-%m-%d %H:%M:%S", time.localtime())
             db.session.commit()
             print(f'[+] 任务ID：{task_id}，{module_name}任务执行完成，全部任务完成，无下一步模块')
             return
@@ -112,5 +112,6 @@ def do_task(module_name,task_id):
     except Exception as e:
         task.task_status = 'error'
         db.session.commit()
-        print(f'[-] 任务ID：{task_id}，{module_name}任务执行失败，错误信息：{str(e)}')
+        print(f'[-] 任务ID：{task_id}，{module_name}任务执行失败，错误信息:')
+        print(traceback.format_exc())
         return

@@ -43,7 +43,8 @@
                     "name": "task_name",
                     "label": "任务名称",
                     "id": "u:f331fc08c913",
-                    "required": true
+                    "required": true,
+                    "placeholder": "今天扫谁？"
                   },
                   {
                     "type": "textarea",
@@ -55,19 +56,22 @@
                     "labelRemark": {
                       "icon": "fa fa-question-circle",
                       "trigger": [
-                        "hover"
+                        "hover",
+                        "click"
                       ],
                       "className": "Remark--warning",
                       "placement": "top",
                       "title": "",
-                      "content": "输入样例：\nexample.com\n127.0.0.1-127.0.0.9\n127.0.0.1/24"
+                      "content": "输入样例：\nexample.com\n127.0.0.1-127.0.0.9\n127.0.0.1/24",
+                      "rootClose": true
                     },
-                    "required": true
+                    "required": true,
+                    "description": "请点击小问号查看目标输入格式样例"
                   },
                   {
                     "type": "select",
-                    "label": "端口范围",
-                    "name": "port_limit",
+                    "label": "选择端口范围",
+                    "name": "select_port_limit",
                     "options": [
                       {
                         "label": "TOP_10",
@@ -88,27 +92,67 @@
                     ],
                     "id": "u:26c426b8b2a8",
                     "multiple": false,
-                    "required": true
+                    "description": "如果您选择了端口扫描相关模块，请记得选择此选项或填写下面的选项"
                   },
                   {
-                    "type": "switch",
-                    "label": "漏洞扫描",
-                    "option": "开启将调用Xray进行扫描",
-                    "name": "vulscan",
-                    "falseValue": false,
-                    "trueValue": true,
-                    "id": "u:b3c8fb30f1aa",
-                    "value": false
+                    "type": "input-text",
+                    "label": "自定义端口范围",
+                    "name": "input_port_limit",
+                    "id": "u:9b2650836965",
+                    "placeholder": "80,443,8080-9090",
+                    "description": "该选项会覆盖上个选项，示例：80,443,8080-9090"
                   },
                   {
-                    "type": "switch",
-                    "label": "只进行漏扫",
-                    "option": "开启后将跳过子域名探测和端口扫描，直接进行漏扫",
-                    "name": "task_running_module",
-                    "falseValue": "waitting",
-                    "trueValue": "webfind",
-                    "id": "u:b3c8fb30f1aa",
-                    "value": "waitting"
+                    "type": "combo",
+                    "label": "模块列表",
+                    "name": "task_module_list",
+                    "id": "u:0f475e0015f5",
+                    "multiple": true,
+                    "addable": true,
+                    "removable": true,
+                    "removableMode": "icon",
+                    "addBtn": {
+                      "label": "新增",
+                      "icon": "fa fa-plus",
+                      "level": "primary",
+                      "size": "sm",
+                      "id": "u:3d999b1dee00"
+                    },
+                    "items": [
+                      {
+                        "type": "select",
+                        "name": "module",
+                        "placeholder": "选项",
+                        "options": [
+                          {
+                            "label": "oneforall",
+                            "value": "oneforall"
+                          },
+                          {
+                            "label": "httpx",
+                            "value": "httpx"
+                          },
+                          {
+                            "label": "scaninfo",
+                            "value": "scaninfo"
+                          },
+                          {
+                            "label": "xray_crawlergo",
+                            "value": "xray_crawlergo"
+                          }
+                        ],
+                        "id": "u:869165d05c61",
+                        "multiple": false,
+                        "value": "oneforall"
+                      }
+                    ],
+                    "strictMode": true,
+                    "syncFields": [
+                    ],
+                    "required": true,
+                    "minLength": 1,
+                    "draggable": true,
+                    "description": "请选择您要执行的模块，拖拽进行排序，模块自上而下进行"
                   }
                 ],
                 "id": "u:e4da09ff8e3c"
@@ -165,9 +209,17 @@
         },
         {
           "type": "text",
+          "name": "task_module_list",
+          "label": "选择模块",
+          "id": "u:36e8001df064",
+          "inline": true,
+          "placeholder": "-"
+        },
+        {
+          "type": "text",
           "name": "task_running_module",
           "label": "运行模块",
-          "id": "u:36e8001df064",
+          "id": "u:7d1a879cf06d",
           "inline": true,
           "placeholder": "-"
         },
@@ -177,11 +229,11 @@
           "label": "运行状态",
           "id": "u:8888fc1833ce",
           "map": {
-            "Finish": "<span class='label label-success'>Finish</span>",
-            "Running": "<span class='label label-primary'>Running</span>",
-            "Paused": "<span class='label label-warning'>Paused</span>",
-            "Waiting": "<span class='label label-warning'>Waiting</span>",
-            "Error": "<span class='label label-danger'>Error</span>"
+            "finish": "<span class='label label-success'>Finish</span>",
+            "running": "<span class='label label-primary'>Running</span>",
+            "paused": "<span class='label label-warning'>Paused</span>",
+            "waiting": "<span class='label label-warning'>Waiting</span>",
+            "error": "<span class='label label-danger'>Error</span>"
           }
         },
         {

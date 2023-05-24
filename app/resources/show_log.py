@@ -1,7 +1,7 @@
 from flask_restful import Resource
 from app.utils import success_api, fail_api
 from .auth import auth_required
-from app.service.queue import tail
+from app.modules.tools import tail
 import config
 import os
 

@@ -9,13 +9,43 @@ from sqlalchemy import and_, desc
 
 from app.models import DomainModels, IPModels, SiteModels, TaskModels
 from app.utils import db, fail_api, success_api, logger
-from app.service.task_manager import TaskManager
+from config import worker_task_list
 
 from .auth import auth_required
 
 '''
 展示任务列表，不包含改删操作
 '''
+
+# 停止指定celery任务
+def stop_task(task_id):
+    # 查询任务
+    task = TaskModels.query.filter_by(task_id=task_id).first()
+    # 先把任务状态改为pause
+    task.task_status = 'paused'
+    db.session.commit()
+
+    # 查看当前任务在运行什么模块，通过模块名在worker_task_list中查找对应的任务，并revoke
+    if task.task_running_module not in worker_task_list.keys():
+        task.task_status = 'error'
+        db.session.commit()
+        msg = fail_api(f'任务ID：{task_id}，任务状态错误，未找到模块{task.task_running_module}')
+    
+    for module_name in worker_task_list.keys():
+        if task.task_running_module == module_name:
+            try:
+                if worker_task_list[module_name] == "None":
+                    msg = fail_api(f'任务ID：{task_id}，无正在运行的{module_name}任务，请刷新后重试')
+                else:
+                    worker_task_list[module_name].revoke(terminate=True)
+                    # 动态调用kill函数
+                    kill_func = f"kill_{module_name}()"
+                    eval(kill_func)
+                    msg = success_api(f'任务ID：{task_id}，停止{module_name}任务成功')
+            except Exception as e:
+                msg = fail_api(f'任务ID：{task_id}，停止{module_name}任务失败，错误信息：{str(e)}')
+    return msg
+    
 
 
 class TaskListResource(Resource):
@@ -34,6 +64,7 @@ class TaskListResource(Resource):
                 'task_id': item.task_id,
                 'task_name': item.task_name,
                 'task_target': item.task_target,
+                'task_module_list': item.task_module_list,
                 'task_running_module': item.task_running_module,
                 'task_status': item.task_status,
                 'task_start_time': item.task_start_time,
@@ -59,29 +90,33 @@ class TaskListResource(Resource):
         task_target = request.json.get('task_target')
         task_target = json.dumps(task_target.split('\n'))
         task_module_list = request.json.get('task_module_list')
-        # 如果task_module_list最后面有逗号，去掉
-        task_module_list = task_module_list.rstrip(',').replace(' ', '')
-        # 去掉空格
+        # "task_module_list":[{"module":"oneforall"},{"module":"scaninfo"},{"module":"scaninfo"}]
+        task_module_list = [module_dict['module'] for module_dict in task_module_list]
+
+        # 如果input_port_limit不为空，则将其赋值给task_port_limit
+        if request.json.get('input_port_limit') != '':
+            task_port_limit = request.json.get('input_port_limit')
+        else:
+            task_port_limit = request.json.get('select_port_limit')
 
         # 设置task_next_module为task_module_list的第一项
-        task_next_module = task_module_list.split(',')[0]
+        task_next_module = task_module_list[0]
         
         taskModel.task_id = task_id
         taskModel.task_name = request.json.get(
             'task_name').strip().replace(' ', '_')
         taskModel.task_target = str(task_target)
-        taskModel.task_module_list = task_module_list
+        taskModel.task_module_list = json.dumps(task_module_list)
         taskModel.task_running_module ='waiting'
         taskModel.task_next_module = task_next_module
         taskModel.task_status = 'waiting'
         taskModel.task_start_time = time.strftime(
             "%Y-%m-%d %H:%M:%S", time.localtime())
-        taskModel.task_port_limit = request.json.get('port_limit')
+        taskModel.task_port_limit = task_port_limit
 
         try:
             db.session.add(taskModel)
             db.session.commit()
-            TaskManager(task_id, taskModel.task_name, task_target,taskModel.task_running_module)
             return success_api(message='添加成功')
         except Exception as e:
             print(str(e))
@@ -94,7 +129,9 @@ class TaskDeleteResource(Resource):
     @auth_required
     def get(self, task_id):
         # 先中断正在进行的任务，再对任务进行删除
-        TaskManager.stopTask(task_id)
+        msg = stop_task(task_id)
+        if msg['code'] == 400:
+            return msg
         try:
             taskModel = TaskModels.query.filter_by(task_id=task_id).delete()
             db.session.commit()
@@ -108,7 +145,7 @@ class TaskDeleteResource(Resource):
         except Exception as e:
             print(str(e))
             db.session.rollback()
-            return fail_api('删除失败')
+            return fail_api('删除失败，数据库错误')
 
 '''
 任务状态操作，包含启动、暂停
@@ -119,24 +156,28 @@ class TaskStatusResource(Resource):
     @auth_required
     def get(self):
         try:
-            if request.args.get('task_status') == 'Paused':
-                TaskModels.query.filter_by(task_id=request.args.get('task_id')).update({'task_status': 'running'})
+            if request.args.get('task_status') == 'paused':
+                TaskModels.query.filter_by(task_id=request.args.get('task_id')).update({'task_status': 'waiting'})
                 db.session.commit()
                 logger.info("[+] 任务{}启动成功".format(request.args.get('task_id')))
                 return success_api('启动成功')
             elif request.args.get('task_status') == 'running': 
-                task_running_module = TaskManager.stopTask(request.args.get('task_id'))
-                # 任务中断时会造成任务记录为error，这里需要再更新下为Paused
-                time.sleep(2)
-                TaskModels.query.filter_by(task_id=request.args.get('task_id')).update({'task_status': 'Paused', 'task_running_module': task_running_module})
-                db.session.commit()
+                msg = stop_task(request.args.get('task_id'))
+                if msg['code'] == 400:
+                    return msg
                 logger.info("[+] 任务{}暂停成功".format(request.args.get('task_id')))
                 return success_api('暂停成功')
             else:
-                task_running_module = TaskManager.stopTask(request.args.get('task_id'))
+                msg = stop_task(request.args.get('task_id'))
+                if msg['code'] == 400:
+                    return msg
                 # 更新数据库中的任务状态
                 time.sleep(2)
-                TaskModels.query.filter_by(task_id=request.args.get('task_id')).update({'task_status': 'waiting', 'task_running_module': task_running_module})
+                task = TaskModels.query.filter_by(task_id=request.args.get('task_id')).first()
+                task_module_list = json.loads(task.task_module_list)
+                task.task_running_module = 'waiting'
+                task.task_next_module = task_module_list[0]
+                task.task_status = 'waiting'
                 db.session.commit()
                 logger.info("[+] 任务{}重启成功".format(request.args.get('task_id')))
                 return success_api('重启成功')
