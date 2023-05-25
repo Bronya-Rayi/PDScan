@@ -17,13 +17,14 @@ RUN dpkg -i /tmp/google-chrome-stable_current_amd64.deb || apt install -fy || dp
 RUN unzip /tmp/chromedriver_linux64.zip -d /tmp \
 && mv /tmp/chromedriver /usr/bin/chromedriver \
 && chmod +x /usr/bin/chromedriver
-RUN apt install libpcap-dev -y
+RUN apt install libpcap-dev redis-server -y
 
 RUN mkdir /app && mkdir /app/PDScan
 ADD . /app/PDScan
 RUN chmod -R 777 /app/PDScan
+RUN chmod +x /app/PDScan/run.sh
 WORKDIR /app/PDScan
 
 EXPOSE 8888
 
-ENTRYPOINT ["python3", "PDScan.py"]
+ENTRYPOINT ["sh", "run.sh"]

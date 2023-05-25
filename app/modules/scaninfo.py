@@ -5,6 +5,7 @@ import config
 import json
 import os
 import IPy
+import netaddr
 
 
 def scaninfo_module(task_id):
@@ -39,19 +40,9 @@ def scaninfo_module(task_id):
         subdomain_ips = subdomain_ips.all()
         for subdomain_ip in subdomain_ips:
             try:
-                ip = subdomain_ip.domain_record
-                # print(ip)
-                if '-' in ip:
-                    c_duan.append(
-                        str(IPy.IP(ip.split('-')[0]).make_net('255.255.255.0')))
-                    ip_list.append(ip)
-                elif '/' in ip:
-                    c_duan.append(ip)
-                    ip_list.append(ip)
-                    # count_target_c_duan += 1
-                else:
-                    c_duan.append(str(IPy.IP(ip).make_net('255.255.255.0')))
-                    ip_list.append(ip)
+                if netaddr.IPNetwork(subdomain_ip.domain_record):
+                    c_duan.append(str(IPy.IP(subdomain_ip.domain_record).make_net('255.255.255.0')))
+                    ip_list.append(subdomain_ip.domain_record)
             except Exception as e:
                 # CNAME不管了
                 continue
@@ -81,8 +72,6 @@ def scaninfo_module(task_id):
         print("[+] IP：{} 开始使用scaninfo扫描".format(ip))
         cmd = config.SCANINFO_CMD.format(
             target_ip=ip, ports=scan_ports, result_file=result_file)
-        # print(config.SCANINFO_LOG_PATH)
-        # print(cmd)
         cmd_result = out_file_cmd_exec(cmd, '/dev/null')
         # cmd_result = 0
         if cmd_result == 0:

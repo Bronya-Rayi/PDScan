@@ -2,14 +2,18 @@ import hashlib
 import json
 import time
 import uuid
+import netaddr
 
 from flask import request
 from flask_restful import Resource
 from sqlalchemy import and_, desc
+from urllib.parse import urlparse
 
 from app.models import DomainModels, IPModels, SiteModels, TaskModels
+from app.modules.tools import *
 from app.utils import db, fail_api, success_api, logger
 from config import worker_task_list
+import traceback
 
 from .auth import auth_required
 
@@ -26,6 +30,10 @@ def stop_task(task_id):
     db.session.commit()
 
     # 查看当前任务在运行什么模块，通过模块名在worker_task_list中查找对应的任务，并revoke
+    if task.task_running_module != 'finish' or task.task_running_module != 'error':
+        msg = success_api(f'任务ID：{task_id}，不需要停止任务，直接重启')
+        return msg
+
     if task.task_running_module not in worker_task_list.keys():
         task.task_status = 'error'
         db.session.commit()
@@ -34,19 +42,53 @@ def stop_task(task_id):
     for module_name in worker_task_list.keys():
         if task.task_running_module == module_name:
             try:
-                if worker_task_list[module_name] == "None":
-                    msg = fail_api(f'任务ID：{task_id}，无正在运行的{module_name}任务，请刷新后重试')
-                else:
+                try:
                     worker_task_list[module_name].revoke(terminate=True)
-                    # 动态调用kill函数
-                    kill_func = f"kill_{module_name}()"
-                    eval(kill_func)
-                    msg = success_api(f'任务ID：{task_id}，停止{module_name}任务成功')
+                except:
+                    pass
+                # 动态调用kill函数
+                kill_func = f"kill_{module_name}()"
+                eval(kill_func)
+                msg = success_api(f'任务ID：{task_id}，停止{module_name}任务成功')
             except Exception as e:
                 msg = fail_api(f'任务ID：{task_id}，停止{module_name}任务失败，错误信息：{str(e)}')
     return msg
     
+def check_is_doamin_or_ip(task_target_list):
+        '''
+        检查任务的目标是域名还是ip，并分类
+        支持格式：
+        example.com
+        127.0.0.1-127.0.0.9
+        127.0.0.1/24
+        '''
+        task_ip = []
+        task_domain = []
 
+        for target in task_target_list:
+            target = target.strip()
+            try:
+                # 判断是否为127.0.0.1-127.0.0.3之类的模式
+                target = target.replace(' ', '')
+                if '-' in target and len(target.split('-')) == 3 and netaddr.IPAddress(target.split('-')[0]) and netaddr.IPAddress(target.split('-')[2]):
+                    task_ip.append(target)
+                elif netaddr.IPNetwork(target):
+                    task_ip.append(target)
+            except:
+                try:
+                    url = urlparse(target)
+                    # 不加http的时候，netloc返回的是空
+                    if url.netloc:
+                        task_domain.append(url.netloc)
+                    else:
+                        task_domain.append(url.path)
+                except Exception as e:
+                    print("checkIsDoaminOrIp error")
+                    print(str(e))
+        # 去重
+        task_domain = list(set(task_domain))
+        task_ip = list(set(task_ip))
+        return task_domain, task_ip
 
 class TaskListResource(Resource):
 
@@ -88,14 +130,19 @@ class TaskListResource(Resource):
         task_id = hashlib.md5(str(uuid.uuid4()).encode('utf8')).hexdigest()[:8]
 
         task_target = request.json.get('task_target')
+        task_target_domain, task_target_ip = check_is_doamin_or_ip(task_target.split('\n'))
+
+
+
         task_target = json.dumps(task_target.split('\n'))
         task_module_list = request.json.get('task_module_list')
         # "task_module_list":[{"module":"oneforall"},{"module":"scaninfo"},{"module":"scaninfo"}]
         task_module_list = [module_dict['module'] for module_dict in task_module_list]
 
         # 如果input_port_limit不为空，则将其赋值给task_port_limit
-        if request.json.get('input_port_limit') != '':
-            task_port_limit = request.json.get('input_port_limit')
+        input_port_limit = request.json.get('input_port_limit')
+        if input_port_limit != None and input_port_limit != '':
+            task_port_limit = input_port_limit.replace(' ','')
         else:
             task_port_limit = request.json.get('select_port_limit')
 
@@ -106,6 +153,8 @@ class TaskListResource(Resource):
         taskModel.task_name = request.json.get(
             'task_name').strip().replace(' ', '_')
         taskModel.task_target = str(task_target)
+        taskModel.task_target_domain = json.dumps(task_target_domain)
+        taskModel.task_target_ip = json.dumps(task_target_ip)
         taskModel.task_module_list = json.dumps(task_module_list)
         taskModel.task_running_module ='waiting'
         taskModel.task_next_module = task_next_module
@@ -130,7 +179,7 @@ class TaskDeleteResource(Resource):
     def get(self, task_id):
         # 先中断正在进行的任务，再对任务进行删除
         msg = stop_task(task_id)
-        if msg['code'] == 400:
+        if msg['status'] == 400:
             return msg
         try:
             taskModel = TaskModels.query.filter_by(task_id=task_id).delete()
@@ -163,13 +212,13 @@ class TaskStatusResource(Resource):
                 return success_api('启动成功')
             elif request.args.get('task_status') == 'running': 
                 msg = stop_task(request.args.get('task_id'))
-                if msg['code'] == 400:
+                if msg['status'] == 400:
                     return msg
                 logger.info("[+] 任务{}暂停成功".format(request.args.get('task_id')))
                 return success_api('暂停成功')
             else:
                 msg = stop_task(request.args.get('task_id'))
-                if msg['code'] == 400:
+                if msg['status'] == 400:
                     return msg
                 # 更新数据库中的任务状态
                 time.sleep(2)
@@ -182,7 +231,7 @@ class TaskStatusResource(Resource):
                 logger.info("[+] 任务{}重启成功".format(request.args.get('task_id')))
                 return success_api('重启成功')
         except Exception as e:
-            print(str(e))
+            traceback.print_exc()
             db.session.rollback()
             return fail_api('[!] 操作失败')
 

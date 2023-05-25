@@ -1,6 +1,7 @@
 import os
 
 from flask import Flask, Blueprint
+from flask_compress import Compress
 from app.utils import init_utils
 import config
 from celery import Celery
@@ -21,9 +22,12 @@ register_task_detail_api(api_bp)
 # register_users_api(api_bp)
 # register_system_api(api_bp)
 # register_task_api(api_bp)
+compress = Compress()
+
 
 def create_app() -> Flask:
     app = Flask('pdscan-flask',static_url_path='/',static_folder='static')
+    compress.init_app(app)
 
     # 引入配置
     app.config['SECRET_KEY'] = config.SECRET_KEY

@@ -31,9 +31,9 @@ def send_task():
         # 判断task.task_next_module是否在worker_task_list中有对应模块，如果有，则发送任务
         if task.task_next_module not in worker_task_list.keys():
             print(f'[-] 任务ID：{task.task_id}，任务状态错误，未找到模块{task.task_next_module}')
-            task.task_running_module = 'Error'
-            task.task_next_module = 'Error'
-            task.task_status = 'Error'
+            task.task_running_module = 'error'
+            task.task_next_module = 'error'
+            task.task_status = 'error'
             db.session.commit()
             continue
 
@@ -84,7 +84,6 @@ def do_task(module_name,task_id):
         db.session.commit()
 
         # 模拟任务执行
-        print(f'[+] 任务ID：{task_id}，{module_name}任务模拟执行')
         # EVAL!!!!!!!!!!!!!
         # module_name已经写死，task_id也写死为自动生成的uuid
         module_func = f"{module_name}_module('{task_id}')"

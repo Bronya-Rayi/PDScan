@@ -94,7 +94,13 @@ docker run --init -d -p 8888:8888 pdscan
 
 
 
+## Chrome和chromedriver下载地址
 
+Chrome下载地址：
+https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+
+chromedriver下载地址：
+https://chromedriver.chromium.org/downloads
 
 
 
