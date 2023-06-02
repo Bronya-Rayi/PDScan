@@ -24,7 +24,7 @@ def send_task():
     waiting_tasks = TaskModels.query.filter_by(task_status='waiting').all()
     # 如果为空，则输出提示信息
     if not waiting_tasks:
-        print('[-] 定时任务：没有任务需要发送')
+        # print('[-] 定时任务：没有任务需要发送')
         return
 
     for task in waiting_tasks:

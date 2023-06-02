@@ -17,9 +17,7 @@ import traceback
 
 from .auth import auth_required
 
-'''
-展示任务列表，不包含改删操作
-'''
+
 
 # 停止指定celery任务
 def stop_task(task_id):
@@ -30,8 +28,8 @@ def stop_task(task_id):
     db.session.commit()
 
     # 查看当前任务在运行什么模块，通过模块名在worker_task_list中查找对应的任务，并revoke
-    if task.task_running_module != 'finish' or task.task_running_module != 'error':
-        msg = success_api(f'任务ID：{task_id}，不需要停止任务，直接重启')
+    if task.task_running_module == 'error':
+        msg = fail_api(f'任务ID：{task_id}，模块不存在，无法重启')
         return msg
 
     if task.task_running_module not in worker_task_list.keys():

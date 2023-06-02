@@ -37,6 +37,8 @@ def create_app() -> Flask:
 
     app.config['LOG_PATH'] = config.LOG_PATH
     app.config['LOG_LEVEL'] = config.LOG_LEVEL 
+
+    app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 36000
     
 
 

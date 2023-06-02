@@ -2,6 +2,7 @@ import os
 import shlex
 import subprocess
 import config
+import time
 
 
 def out_file_cmd_exec(cmd, file_path='log/tool.log'):
@@ -36,6 +37,7 @@ def clear_oneforall_results():
 
 def kill_oneforall():
     os.system(r"ps -ef |grep oneforall |grep -v grep |awk '{print $2}'|xargs kill -9")
+    os.system(r"ps -ef |grep massdns |grep -v grep |awk '{print $2}'|xargs kill -9")
 
 def kill_httpx():
     os.system(r"ps -ef |grep httpx |grep -v grep |awk '{print $2}'|xargs kill -9")
@@ -45,11 +47,18 @@ def kill_scaninfo():
 
 def kill_xray():
     os.system(r"ps -ef |grep xray |grep -v grep |awk '{print $2}'|xargs kill -9")
+    time.sleep(1)
+    os.system(r"ps -ef |grep xray |grep -v grep |awk '{print $2}'|xargs kill -9")
 
 def kill_crawlergo():
+    os.system(r"ps -ef |grep crawlergo |grep -v grep |awk '{print $2}'|xargs kill -9")
+    os.system(r"ps -ef |grep chrome |grep -v grep |awk '{print $2}'|xargs kill -9")
+    time.sleep(1)
     os.system(r"ps -ef |grep crawlergo |grep -v grep |awk '{print $2}'|xargs kill -9")
     os.system(r"ps -ef |grep chrome |grep -v grep |awk '{print $2}'|xargs kill -9")
 
 def kill_xray_crawlergo():
     kill_xray()
     kill_crawlergo()
+    
+    

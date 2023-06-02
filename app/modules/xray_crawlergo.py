@@ -65,7 +65,6 @@ def xray_crawlergo_module(task_id):
         task_id=xray_crawlergo_task.task_id).all()
     
     if len(site_db) == 0:
-        xray_crawlergo_task.task_running_module = 'vulscan_error'
         xray_crawlergo_task.task_status = 'error'
         print("[!] 任务：{} 没有站点，无法进行漏洞扫描".format(task_id))
         db.session.commit()
