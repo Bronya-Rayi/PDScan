@@ -13,7 +13,7 @@ celery_app = create_celery(app)
 auth = HTTPBasicAuth()
 
 users = {
-    "pdscan": "123`123",
+    "pdscan": "123qweasd~",
 }
 
 @auth.verify_password

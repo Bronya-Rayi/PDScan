@@ -4,6 +4,8 @@
 
 纯纯的胶水平台，借用了各个大师傅的优秀工具，完成了子域名查询（oneforall），ip端口扫描（scaninfo)，web站点存活探测（httpx），爬虫+漏扫（crawlergo+xray）的工作。
 
+后续可以自行添加其他工具模块，自定义扫描顺序
+
 没有技术含量，但是可以省事
 
 用sqlite做数据库，省去了配置数据库的烦恼
@@ -11,6 +13,12 @@
 不会写前端，前端略丑。。。
 
 ## 安装
+
+**注意，以下端口都是https服务，采用http协议访问会报错**
+
+**注意，以下端口都是https服务，采用http协议访问会报错**
+
+**注意，以下端口都是https服务，采用http协议访问会报错**
 
 现成docker：
 
@@ -55,44 +63,67 @@ docker run --init -d -p 8888:8888 pdscan
 
 Linux Only
 
-理论上Windows也行，但是配环境太麻烦懒得弄了
-
 ```bash
 docker build . -t pdscan
 
 docker run --init -d -p 8888:8888 pdscan
 ```
 
-
-
 ## 使用
 
-默认密码：`admin/123123123`
+默认basic auth：`pdcc/123qweasd~`
+
+默认登录密码：`admin/123123123`
 
 ![image-20221223122118115](.assets/.README.assets/image-20221223122118115.png)
 
+### 首页
+
+![image-20230611210750780](./assets/image-20230611210750780.png)
 
 ### 添加任务
 
-![image-20221223122156036](.assets/.README.assets/image-20221223122156036.png)
+可拖拽任务进行自定义运行先后顺序
+
+注意，有的模块依赖于前个模块的结果
+
+例如，xray_crawlergo模块只负责从数据库中取出存活站点，然后漏扫，如果前期没有使用httpx或者其他模块探测存活站点，并存入数据库，xray_crawlergo模块自然无法运行
+
+![image-20230611205246865](./assets/image-20230611205246865.png)
 
 查看任务状态
 
-![image-20221223122227998](.assets/.README.assets/image-20221223122227998.png)
+![image-20230611211033391](./assets/image-20230611211033391.png)
 
 ### 任务详情
 
 均可导出csv，若想导出全部数据，先查询99999条（后端懒得写了）
 
-![image-20221223122948608](.assets/.README.assets/image-20221223122948608.png)
+![image-20230611210726019](./assets/image-20230611210726019.png)
+
+xray报告，点击查看
+
+![image-20230611211053094](./assets/image-20230611211053094.png)
 
 
 
-内嵌xray报告
+## 已有模块简介
 
-![image-20221223145710029](.assets/.README.assets/image-20221223145710029.png)
+* oneforall
 
+  将用户输入的目标域名取出，然后依次运行oneforall进行子域名探测，将子域名探测结果存入数据库
 
+* scaninfo
+
+  将用户输入的ip地址及数据库中存储的子域名的ip地址取出，进行端口探测，将端口扫描结果存入数据库
+
+* httpx
+
+  将用户输入的目标域名、ip和数据库中的子域名取出，判断web存活，将存活站点结果存入数据库
+
+* xray_crawlergo
+
+  将数据库中的存活站点取出，用crawlergo爬取，然后xray漏扫
 
 ## Chrome和chromedriver下载地址
 
