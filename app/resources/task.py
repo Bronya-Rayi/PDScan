@@ -12,45 +12,11 @@ from urllib.parse import urlparse
 from app.models import DomainModels, IPModels, SiteModels, TaskModels
 from app.modules.tools import *
 from app.utils import db, fail_api, success_api, logger
-from config import worker_task_list
 import traceback
 
 from .auth import auth_required
 
 
-
-# 停止指定celery任务
-def stop_task(task_id):
-    # 查询任务
-    task = TaskModels.query.filter_by(task_id=task_id).first()
-    # 先把任务状态改为pause
-    task.task_status = 'paused'
-    db.session.commit()
-
-    # 查看当前任务在运行什么模块，通过模块名在worker_task_list中查找对应的任务，并revoke
-    if task.task_running_module == 'error':
-        msg = fail_api(f'任务ID：{task_id}，模块不存在，无法重启')
-        return msg
-
-    if task.task_running_module not in worker_task_list.keys():
-        task.task_status = 'error'
-        db.session.commit()
-        msg = fail_api(f'任务ID：{task_id}，任务状态错误，未找到模块{task.task_running_module}')
-    
-    for module_name in worker_task_list.keys():
-        if task.task_running_module == module_name:
-            try:
-                try:
-                    worker_task_list[module_name].revoke(terminate=True)
-                except:
-                    pass
-                # 动态调用kill函数
-                kill_func = f"kill_{module_name}()"
-                eval(kill_func)
-                msg = success_api(f'任务ID：{task_id}，停止{module_name}任务成功')
-            except Exception as e:
-                msg = fail_api(f'任务ID：{task_id}，停止{module_name}任务失败，错误信息：{str(e)}')
-    return msg
     
 def check_is_doamin_or_ip(task_target_list):
         '''
@@ -204,22 +170,25 @@ class TaskStatusResource(Resource):
     def get(self):
         try:
             if request.args.get('task_status') == 'paused':
-                TaskModels.query.filter_by(task_id=request.args.get('task_id')).update({'task_status': 'waiting'})
+                task = TaskModels.query.filter_by(task_id=request.args.get('task_id')).first()
+                task.task_status = 'waiting'
                 db.session.commit()
                 logger.info("[+] 任务{}启动成功".format(request.args.get('task_id')))
                 return success_api('启动成功')
             elif request.args.get('task_status') == 'running': 
-                msg = stop_task(request.args.get('task_id'))
-                if msg['status'] == 400:
-                    return msg
+                task = TaskModels.query.filter_by(task_id=request.args.get('task_id')).first()
+                task.task_status = 'waiting_paused'
+                db.session.commit()
+
                 logger.info("[+] 任务{}暂停成功".format(request.args.get('task_id')))
-                return success_api('暂停成功')
+                return success_api('暂停成功，请稍等后刷新查看状态')
             else:
-                msg = stop_task(request.args.get('task_id'))
-                if msg['status'] == 400:
-                    return msg
+                task = TaskModels.query.filter_by(task_id=request.args.get('task_id')).first()
+                task.task_status = 'waiting_paused'
+                db.session.commit()
+
                 # 更新数据库中的任务状态
-                time.sleep(2)
+                time.sleep(5)
                 task = TaskModels.query.filter_by(task_id=request.args.get('task_id')).first()
                 task_module_list = json.loads(task.task_module_list)
                 task.task_running_module = 'waiting'

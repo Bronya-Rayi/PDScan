@@ -8,6 +8,7 @@ import re
 import traceback
 import json
 import time
+import os
 # python3 -m celery -A app.celery_task.celery_tasks worker --loglevel=info
 # 创建Celery应用
 
@@ -43,6 +44,9 @@ def send_task():
                     if worker_task_list[module_name] == "None":
                         print(f'[+] 无历史{module_name}任务，开启新{module_name}任务')
                         worker_task_list[module_name] = do_task.delay(module_name,task.task_id)
+                        task.celery_task_id = worker_task_list[module_name].id
+                        db.session.commit()
+
                         break
                     
                     # 不是PENDING状态的任务，说明其已经执行结束，或者执行出现问题，直接强制revoke，然后开启新任务
@@ -52,13 +56,15 @@ def send_task():
                         worker_task_list[module_name].revoke(terminate=True)
                         print(f'[+] 任务ID：{task.task_id}，开启{module_name}任务')
                         worker_task_list[module_name] = do_task.delay(module_name,task.task_id)
-
+                        task.celery_task_id = worker_task_list[module_name].id
+                        db.session.commit()
+                    
                         
 
                 except Exception as e:
                     print(f'[-] 任务ID：{task.task_id}，开启oneforall任务失败，错误信息：', str(e))       
                 
-
+    db.session.close()
     print('[+] 定时任务：所有任务已发送')
     return
 
@@ -107,10 +113,57 @@ def do_task(module_name,task_id):
             task.task_running_module = 'waiting'
             db.session.commit()
             print(f'[+] 任务ID：{task_id}，{module_name}任务执行完成，下一步执行模块：{task.task_next_module}')
+        db.session.close()
 
     except Exception as e:
         task.task_status = 'error'
         db.session.commit()
+        db.session.close()
+
         print(f'[-] 任务ID：{task_id}，{module_name}任务执行失败，错误信息:')
         print(traceback.format_exc())
         return
+    
+# 停止指定celery任务
+@celery_app.task(rate_limit='1/s')
+def stop_task():
+    # 查询所有task_status为waiting_的任务
+    waiting_tasks = TaskModels.query.filter_by(task_status='waiting_paused').all()
+    # 如果为空，则输出提示信息
+    if not waiting_tasks:
+        # print('[-] 定时任务：没有任务需要暂停')
+        return
+
+    for task in waiting_tasks:
+        if task.task_next_module not in worker_task_list.keys():
+                print(f'[-] 任务ID：{task.task_id}，任务状态错误，未找到模块{task.task_next_module}')
+                task.task_running_module = 'error'
+                task.task_next_module = 'error'
+                task.task_status = 'error'
+                db.session.commit()
+
+                continue
+        
+        for module_name in worker_task_list.keys():
+            if task.task_running_module == module_name:
+                try:
+                    worker_task_list[module_name].revoke(terminate=True)
+                    # 动态调用kill函数
+                    kill_func = f"kill_{module_name}()"
+                    eval(kill_func)
+                    print(f'任务ID：{task.task_id}，停止{module_name}任务成功')
+                    task.task_status = 'paused'
+                    # 因为在task_running_module运行时暂停的，所以下一步执行的模块应该是task_running_module
+                    task.task_next_module = task.task_running_module
+                    db.session.commit()
+                    db.session.close()
+
+                    return
+                except Exception as e:
+                    print(f'任务ID：{task.task_id}，停止{module_name}任务失败，错误信息：{str(e)}') 
+                    task.task_status = 'error'
+                    db.session.commit()
+                    db.session.close()
+
+                    return
+                

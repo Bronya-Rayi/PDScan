@@ -16,3 +16,4 @@ class TaskModels(db.Model):
     task_c_duan = db.Column(db.String())
     task_port_limit = db.Column(db.String())
     task_xray_result = db.Column(db.String())
+    celery_task_id = db.Column(db.String())

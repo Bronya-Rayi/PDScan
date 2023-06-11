@@ -40,6 +40,7 @@ def xray_crawlergo_module(task_id):
         {"task_xray_result": json.dumps(task_xray_result)})
     db.session.commit()
 
+
     def wait_xray_ok(xray_log_path, xray_wait_time):
         cmd = '''
             wc {0} | awk '{{print $1}}';
@@ -68,6 +69,7 @@ def xray_crawlergo_module(task_id):
         xray_crawlergo_task.task_status = 'error'
         print("[!] 任务：{} 没有站点，无法进行漏洞扫描".format(task_id))
         db.session.commit()
+
         kill_xray()
         return False
     
