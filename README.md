@@ -71,7 +71,7 @@ docker run --init -d -p 8888:8888 pdscan
 
 ## 使用
 
-默认basic auth：`pdcc/123qweasd~`
+默认basic auth：`pdscan/123qweasd~`
 
 默认登录密码：`admin/123123123`
 
