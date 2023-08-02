@@ -9,10 +9,7 @@ SQLALCHEMY_TRACK_MODIFICATIONS = True
 SQLALCHEMY_ECHO = False
 SQLALCHEMY_POOL_RECYCLE = 8
 
-# 证书配置
-CERT_PATH = os.path.join(os.path.dirname(os.path.abspath(__name__)), 'cert', 'cert.pem')
-CERT_KEY_PATH = os.path.join(os.path.dirname(os.path.abspath(__name__)), 'cert', 'key.pem')
-CSR_PATH = os.path.join(os.path.dirname(os.path.abspath(__name__)), 'cert', 'server.csr')
+
 
 LOG_LEVEL = logging.ERROR
 LOG_PATH = os.path.join(os.path.dirname(os.path.abspath(__name__)), 'log')

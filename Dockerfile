@@ -4,7 +4,7 @@ RUN sed -i s@/archive.ubuntu.com/@/mirrors.aliyun.com/@g /etc/apt/sources.list \
 && sed -i s/security.ubuntu.com/mirrors.aliyun.com/g /etc/apt/sources.list \
 && apt-get clean \
 && apt update \
-&& apt install -y wget zip curl wget python3 python3-pip
+&& apt install -y wget zip curl wget python3 python3-pip nginx
 
 ENV DEBIAN_FRONTEND noninteractive 
 
@@ -22,6 +22,7 @@ ADD . /app/PDScan
 RUN pip3 install -r /app/PDScan/requirements.txt -i https://mirrors.aliyun.com/pypi/simple/
 RUN chmod -R 777 /app/PDScan
 RUN chmod +x /app/PDScan/run.sh
+RUN mv /app/PDScan/nginx/default /etc/nginx/sites-enabled/default
 WORKDIR /app/PDScan
 
 EXPOSE 8888
