@@ -9,3 +9,4 @@ class SiteModels(db.Model):
     status_code = db.Column(db.String())
     title = db.Column(db.String())
     finger = db.Column(db.String())
+    xray_crawlergo_finish = db.Column(db.Integer)

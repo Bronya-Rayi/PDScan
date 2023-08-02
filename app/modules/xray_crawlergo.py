@@ -74,6 +74,9 @@ def xray_crawlergo_module(task_id):
         return False
     
     for site in site_db:
+        if site.xray_crawlergo_finish == 1:
+            print("[+] 站点：{} 前期已扫描过，本次跳过".format(site.url))
+            continue
 
         print("[+] 正在爬取：{}".format(site.url))
         cmd = config.CRAWLERGO_CMD.format(
@@ -90,8 +93,10 @@ def xray_crawlergo_module(task_id):
             print("[!] 站点：{} 漏洞扫描失败,crawlergo运行期间出错".format(
                 site.url))
             kill_crawlergo()
-
+        site.xray_crawlergo_finish = 1
+        db.session.commit()
         print("[+] 站点{} 漏洞扫描完成，开始扫描下一个站点".format(site.url))
+
     # 漏扫结束
     print("[+] 任务：{} 漏扫完成，正在关闭xray和crawlergo".format(task_id))
     kill_crawlergo()

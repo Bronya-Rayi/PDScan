@@ -183,16 +183,16 @@ class TaskStatusResource(Resource):
                 logger.info("[+] 任务{}暂停成功".format(request.args.get('task_id')))
                 return success_api('暂停成功，请稍等后刷新查看状态')
             else:
+                # 如果是error的任务状态，则重置任务，先把状态改为waiting_paused，等待kill
                 task = TaskModels.query.filter_by(task_id=request.args.get('task_id')).first()
                 task.task_status = 'waiting_paused'
                 db.session.commit()
 
-                # 更新数据库中的任务状态
+                # 更新数据库中的任务状态，将下一步要运行的模块重置为当前模块
                 time.sleep(5)
                 task = TaskModels.query.filter_by(task_id=request.args.get('task_id')).first()
                 task_module_list = json.loads(task.task_module_list)
-                task.task_running_module = 'waiting'
-                task.task_next_module = task_module_list[0]
+                task.task_next_module = task.task_running_module
                 task.task_status = 'waiting'
                 db.session.commit()
                 logger.info("[+] 任务{}重启成功".format(request.args.get('task_id')))
