@@ -1,12 +1,11 @@
 FROM ubuntu:20.04
+ENV DEBIAN_FRONTEND noninteractive 
 
 RUN sed -i s@/archive.ubuntu.com/@/mirrors.aliyun.com/@g /etc/apt/sources.list \
 && sed -i s/security.ubuntu.com/mirrors.aliyun.com/g /etc/apt/sources.list \
 && apt-get clean \
 && apt update \
 && apt install -y wget zip curl wget python3 python3-pip nginx
-
-ENV DEBIAN_FRONTEND noninteractive 
 
 ADD tools/chrome/google-chrome-stable_current_amd64.deb /tmp/google-chrome-stable_current_amd64.deb
 ADD tools/chrome/chromedriver_linux64.zip /tmp/chromedriver_linux64.zip

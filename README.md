@@ -14,18 +14,18 @@
 
 ## 安装
 
-**注意，以下端口都是https服务，采用http协议访问会报错**
-
-**注意，以下端口都是https服务，采用http协议访问会报错**
-
-**注意，以下端口都是https服务，采用http协议访问会报错**
-
 现成docker：
+
+**注意，以下端口都是https服务，采用http协议访问会报错**
+
+**注意，以下端口都是https服务，采用http协议访问会报错**
+
+**注意，以下端口都是https服务，采用http协议访问会报错**
 
 ```bash
 docker pull bronyarayi/pdscan
 
-docker run --init -d -p 8888:8888 pdscan
+docker run --init -d -p 8443:8443 bronyarayi/pdscan
 ```
 
 ### 自行构建docker
@@ -66,7 +66,7 @@ Linux Only
 ```bash
 docker build . -t pdscan
 
-docker run --init -d -p 8888:8888 pdscan
+docker run --init -d -p 8443:8443 pdscan
 ```
 
 ## 使用
