@@ -1,0 +1,549 @@
+{
+  "type": "page",
+  "title": "setting",
+  "body": [
+    {
+      "type": "tabs",
+      "id": "u:9e0536660a92",
+      "tabs": [
+        {
+          "title": "用户设置",
+          "body": [
+            {
+              "type": "form",
+              "id": "u:9517dfa4f11b",
+              "title": "",
+              "body": [
+                {
+                  "label": "旧密码",
+                  "type": "input-password",
+                  "name": "old_password",
+                  "id": "u:9a9c25a5bc41",
+                  "required": true,
+                  "validations": {},
+                  "validationErrors": {},
+                  "showCounter": false
+                },
+                {
+                  "type": "input-password",
+                  "label": "新密码",
+                  "name": "new_password",
+                  "id": "u:51e30f52da99",
+                  "required": true,
+                  "validations": {
+                    "minLength": 8
+                  },
+                  "validationErrors": {
+                    "minLength": "密码长度必须大于8"
+                  },
+                  "showCounter": false
+                },
+                {
+                  "type": "input-password",
+                  "label": "重复新密码",
+                  "name": "new_password_2",
+                  "id": "u:8e80f04d1281",
+                  "required": true,
+                  "validations": {
+                    "minLength": 8
+                  },
+                  "validationErrors": {
+                    "minLength": "密码长度必须大于8"
+                  },
+                  "showCounter": false
+                }
+              ],
+              "api": {
+                "url": "/api/v1/auth/chpasswd",
+                "method": "post",
+                "messages": {},
+                "dataType": "json"
+              },
+              "actions": [
+                {
+                  "type": "submit",
+                  "label": "提交",
+                  "primary": true,
+                  "id": "u:9e2a2adff1ac"
+                }
+              ],
+              "feat": "Insert"
+            }
+          ],
+          "id": "u:f2dca1669a86"
+        },
+        {
+          "title": "工具配置",
+          "body": [
+            {
+              "id": "u:2203d6ba3d68",
+              "type": "form",
+              "title": "OneForAll",
+              "mode": "horizontal",
+              "dsType": "api",
+              "feat": "Edit",
+              "body": [
+                {
+                  "name": "tool_cmd",
+                  "label": "工具命令行",
+                  "type": "input-text",
+                  "id": "u:637df46d3185"
+                },
+                {
+                  "name": "tool_log_path",
+                  "label": "工具日志目录",
+                  "type": "input-text",
+                  "id": "u:5b475ac4ad41"
+                },
+                {
+                  "name": "tool_result_path",
+                  "label": "工具结果目录",
+                  "type": "input-text",
+                  "id": "u:dc2cb2b66b07"
+                },
+                {
+                  "name": "tool_update_sh",
+                  "label": "工具更新链接",
+                  "type": "input-text",
+                  "id": "u:bb3a31c9b85c"
+                },
+                {
+                  "name": "tool_others",
+                  "label": "其他",
+                  "type": "input-text",
+                  "id": "u:951f87f069b3"
+                }
+              ],
+              "api": {
+                "url": "/api/v1/settings/tools?tool_name=oneforall",
+                "method": "post",
+                "requestAdaptor": "",
+                "adaptor": "",
+                "messages": {},
+                "dataType": "json"
+              },
+              "actions": [
+                {
+                  "type": "button",
+                  "label": "提交",
+                  "onEvent": {
+                    "click": {
+                      "actions": [
+                        {
+                          "actionType": "submit",
+                          "componentId": "u:2203d6ba3d68"
+                        },
+                        {
+                          "componentId": "u:2203d6ba3d68",
+                          "ignoreError": false,
+                          "actionType": "reload"
+                        }
+                      ]
+                    }
+                  },
+                  "level": "primary",
+                  "id": "u:ce31d07ca5b5"
+                }
+              ],
+              "resetAfterSubmit": true,
+              "initApi": "/api/v1/settings/tools?tool_name=oneforall",
+              "preventEnterSubmit": true
+            },
+            {
+              "id": "u:25a6e092721a",
+              "type": "form",
+              "title": "scaninfo",
+              "body": [
+                {
+                  "type": "input-text",
+                  "id": "u:6bbd03cd61c3",
+                  "name": "tool_cmd",
+                  "label": "工具命令行"
+                },
+                {
+                  "name": "tool_log_path",
+                  "label": "工具日志目录",
+                  "type": "input-text",
+                  "id": "u:a1e5b0d6e930"
+                },
+                {
+                  "name": "tool_result_path",
+                  "label": "工具结果目录",
+                  "type": "input-text",
+                  "id": "u:e7d66e24fab5"
+                },
+                {
+                  "name": "tool_update_sh",
+                  "label": "工具更新链接",
+                  "type": "input-text",
+                  "id": "u:492e02039d30"
+                },
+                {
+                  "name": "tool_others",
+                  "label": "其他",
+                  "type": "input-text",
+                  "id": "u:c66eea6cd9d8"
+                }
+              ],
+              "mode": "horizontal",
+              "dsType": "api",
+              "feat": "Edit",
+              "api": {
+                "url": "/api/v1/settings/tools?tool_name=scaninfo",
+                "method": "post",
+                "requestAdaptor": "",
+                "adaptor": "",
+                "messages": {},
+                "dataType": "json"
+              },
+              "actions": [
+                {
+                  "type": "button",
+                  "label": "提交",
+                  "onEvent": {
+                    "click": {
+                      "actions": [
+                        {
+                          "actionType": "submit",
+                          "componentId": "u:25a6e092721a"
+                        },
+                        {
+                          "componentId": "u:25a6e092721a",
+                          "ignoreError": false,
+                          "actionType": "reload"
+                        }
+                      ]
+                    }
+                  },
+                  "level": "primary",
+                  "id": "u:dead00a059d5"
+                }
+              ],
+              "resetAfterSubmit": true,
+              "initApi": "/api/v1/settings/tools?tool_name=scaninfo",
+              "preventEnterSubmit": true
+            },
+            {
+              "id": "u:faae4dd949d8",
+              "type": "form",
+              "title": "httpx",
+              "mode": "horizontal",
+              "dsType": "api",
+              "feat": "Edit",
+              "body": [
+                {
+                  "name": "tool_cmd",
+                  "label": "工具命令行",
+                  "type": "input-text",
+                  "id": "u:54ae71718fa3"
+                },
+                {
+                  "name": "tool_log_path",
+                  "label": "工具日志目录",
+                  "type": "input-text",
+                  "id": "u:62908a966148"
+                },
+                {
+                  "name": "tool_result_path",
+                  "label": "工具结果目录",
+                  "type": "input-text",
+                  "id": "u:18bb00bfe2eb"
+                },
+                {
+                  "name": "tool_update_sh",
+                  "label": "工具更新链接",
+                  "type": "input-text",
+                  "id": "u:ef90c4a38820"
+                },
+                {
+                  "name": "tool_others",
+                  "label": "其他",
+                  "type": "input-text",
+                  "id": "u:a1b4a166e185"
+                }
+              ],
+              "api": {
+                "url": "/api/v1/settings/tools?tool_name=httpx",
+                "method": "post",
+                "requestAdaptor": "",
+                "adaptor": "",
+                "messages": {},
+                "dataType": "json"
+              },
+              "actions": [
+                {
+                  "type": "button",
+                  "label": "提交",
+                  "onEvent": {
+                    "click": {
+                      "actions": [
+                        {
+                          "actionType": "submit",
+                          "componentId": "u:faae4dd949d8"
+                        },
+                        {
+                          "componentId": "u:faae4dd949d8",
+                          "ignoreError": false,
+                          "actionType": "reload"
+                        }
+                      ]
+                    }
+                  },
+                  "level": "primary",
+                  "id": "u:f368f4523445"
+                }
+              ],
+              "resetAfterSubmit": true,
+              "initApi": "/api/v1/settings/tools?tool_name=httpx",
+              "preventEnterSubmit": true
+            },
+            {
+              "id": "u:833e3b148fcf",
+              "type": "form",
+              "title": "dirsearch",
+              "mode": "horizontal",
+              "dsType": "api",
+              "feat": "Edit",
+              "body": [
+                {
+                  "name": "tool_cmd",
+                  "label": "工具命令行",
+                  "type": "input-text",
+                  "id": "u:2b7a3d38af0d"
+                },
+                {
+                  "name": "tool_log_path",
+                  "label": "工具日志目录",
+                  "type": "input-text",
+                  "id": "u:81b9acd9444c"
+                },
+                {
+                  "name": "tool_result_path",
+                  "label": "工具结果目录",
+                  "type": "input-text",
+                  "id": "u:e3d0ae7d8b4a"
+                },
+                {
+                  "name": "tool_update_sh",
+                  "label": "工具更新链接",
+                  "type": "input-text",
+                  "id": "u:6c7c6e014436"
+                },
+                {
+                  "name": "tool_others",
+                  "label": "其他",
+                  "type": "input-text",
+                  "id": "u:df5dd5bf30c1"
+                }
+              ],
+              "api": {
+                "url": "/api/v1/settings/tools?tool_name=dirsearch",
+                "method": "post",
+                "requestAdaptor": "",
+                "adaptor": "",
+                "messages": {},
+                "dataType": "json"
+              },
+              "actions": [
+                {
+                  "type": "button",
+                  "label": "提交",
+                  "onEvent": {
+                    "click": {
+                      "actions": [
+                        {
+                          "actionType": "submit",
+                          "componentId": "u:833e3b148fcf"
+                        },
+                        {
+                          "componentId": "u:833e3b148fcf",
+                          "ignoreError": false,
+                          "actionType": "reload"
+                        }
+                      ]
+                    }
+                  },
+                  "level": "primary",
+                  "id": "u:27b16e33706a"
+                }
+              ],
+              "resetAfterSubmit": true,
+              "initApi": "/api/v1/settings/tools?tool_name=dirsearch",
+              "preventEnterSubmit": true
+            },
+            {
+              "id": "u:bfd0d75d16bc",
+              "type": "form",
+              "title": "xray",
+              "mode": "horizontal",
+              "dsType": "api",
+              "feat": "Edit",
+              "body": [
+                {
+                  "name": "tool_cmd",
+                  "label": "工具命令行",
+                  "type": "input-text",
+                  "id": "u:dc07f106b924"
+                },
+                {
+                  "name": "tool_log_path",
+                  "label": "工具日志目录",
+                  "type": "input-text",
+                  "id": "u:6d8bb833c1ba"
+                },
+                {
+                  "name": "tool_result_path",
+                  "label": "工具结果目录",
+                  "type": "input-text",
+                  "id": "u:74ac6824136f"
+                },
+                {
+                  "name": "tool_update_sh",
+                  "label": "工具更新链接",
+                  "type": "input-text",
+                  "id": "u:95694fb533cb"
+                },
+                {
+                  "name": "tool_others",
+                  "label": "其他",
+                  "type": "input-text",
+                  "id": "u:6d5803246dbd"
+                }
+              ],
+              "api": {
+                "url": "/api/v1/settings/tools?tool_name=xray",
+                "method": "post",
+                "requestAdaptor": "",
+                "adaptor": "",
+                "messages": {},
+                "dataType": "json"
+              },
+              "actions": [
+                {
+                  "type": "button",
+                  "label": "提交",
+                  "onEvent": {
+                    "click": {
+                      "actions": [
+                        {
+                          "actionType": "submit",
+                          "componentId": "u:bfd0d75d16bc"
+                        },
+                        {
+                          "componentId": "u:bfd0d75d16bc",
+                          "ignoreError": false,
+                          "actionType": "reload"
+                        }
+                      ]
+                    }
+                  },
+                  "level": "primary",
+                  "id": "u:6ae61711ca91"
+                }
+              ],
+              "resetAfterSubmit": true,
+              "initApi": {
+                "method": "get",
+                "url": "/api/v1/settings/tools?tool_name=xray",
+                "requestAdaptor": "",
+                "adaptor": "",
+                "messages": {}
+              },
+              "preventEnterSubmit": true
+            },
+            {
+              "id": "u:6ca9b60f834c",
+              "type": "form",
+              "title": "crawlergo",
+              "mode": "horizontal",
+              "dsType": "api",
+              "feat": "Edit",
+              "body": [
+                {
+                  "name": "tool_cmd",
+                  "label": "工具命令行",
+                  "type": "input-text",
+                  "id": "u:ab63e3d0b24e"
+                },
+                {
+                  "name": "tool_log_path",
+                  "label": "工具日志目录",
+                  "type": "input-text",
+                  "id": "u:59dc8af20bc9"
+                },
+                {
+                  "name": "tool_result_path",
+                  "label": "工具结果目录",
+                  "type": "input-text",
+                  "id": "u:348490f9c5be"
+                },
+                {
+                  "name": "tool_update_sh",
+                  "label": "工具更新链接",
+                  "type": "input-text",
+                  "id": "u:3dfc0fa51c1c"
+                },
+                {
+                  "name": "tool_others",
+                  "label": "其他",
+                  "type": "input-text",
+                  "id": "u:1f19ccef0f54"
+                }
+              ],
+              "api": {
+                "url": "/api/v1/settings/tools?tool_name=crawlergo",
+                "method": "post",
+                "requestAdaptor": "",
+                "adaptor": "",
+                "messages": {},
+                "dataType": "json"
+              },
+              "actions": [
+                {
+                  "type": "button",
+                  "label": "提交",
+                  "onEvent": {
+                    "click": {
+                      "actions": [
+                        {
+                          "actionType": "submit",
+                          "componentId": "u:6ca9b60f834c"
+                        },
+                        {
+                          "componentId": "u:6ca9b60f834c",
+                          "ignoreError": false,
+                          "actionType": "reload"
+                        }
+                      ]
+                    }
+                  },
+                  "level": "primary",
+                  "id": "u:07748843902b"
+                }
+              ],
+              "resetAfterSubmit": true,
+              "initApi": {
+                "method": "get",
+                "url": "/api/v1/settings/tools?tool_name=crawlergo",
+                "requestAdaptor": "",
+                "adaptor": "",
+                "messages": {}
+              },
+              "preventEnterSubmit": true
+            }
+          ],
+          "id": "u:0357521d49ea"
+        }
+      ]
+    }
+  ],
+  "id": "u:c28268d41319",
+  "pullRefresh": {
+    "disabled": true
+  },
+  "regions": [
+    "body"
+  ],
+  "asideResizor": false,
+  "className": "m-xs"
+}

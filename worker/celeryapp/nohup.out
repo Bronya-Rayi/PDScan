@@ -1,0 +1,48 @@
+/usr/local/lib/python3.10/dist-packages/celery/platforms.py:840: SecurityWarning: You're running the worker with superuser privileges: this is
+absolutely not recommended!
+
+Please specify a different user using the --uid option.
+
+User information: uid=0 euid=0 gid=0 egid=0
+
+  warnings.warn(SecurityWarning(ROOT_DISCOURAGED.format(
+ 
+ -------------- celery@6b1c7704505d v5.2.7 (dawn-chorus)
+--- ***** ----- 
+-- ******* ---- Linux-5.15.0-76-generic-x86_64-with-glibc2.35 2024-03-05 15:12:06
+- *** --- * --- 
+- ** ---------- [config]
+- ** ---------- .> app:         pdscan_task_celery:0x7fbea46fc6a0
+- ** ---------- .> transport:   redis://localhost:6379/0
+- ** ---------- .> results:     redis://localhost:6379/1
+- *** --- * --- .> concurrency: 1 (prefork)
+-- ******* ---- .> task events: OFF (enable -E to monitor tasks in this worker)
+--- ***** ----- 
+ -------------- [queues]
+                .> send_task        exchange=send_task(direct) key=send_task
+                
+
+/usr/local/lib/python3.10/dist-packages/celery/platforms.py:840: SecurityWarning: You're running the worker with superuser privileges: this is
+absolutely not recommended!
+
+Please specify a different user using the --uid option.
+
+User information: uid=0 euid=0 gid=0 egid=0
+
+  warnings.warn(SecurityWarning(ROOT_DISCOURAGED.format(
+ 
+ -------------- celery@6b1c7704505d v5.2.7 (dawn-chorus)
+--- ***** ----- 
+-- ******* ---- Linux-5.15.0-76-generic-x86_64-with-glibc2.35 2024-03-05 15:12:08
+- *** --- * --- 
+- ** ---------- [config]
+- ** ---------- .> app:         pdscan_task_celery:0x7ff4a47f9d80
+- ** ---------- .> transport:   redis://localhost:6379/0
+- ** ---------- .> results:     redis://localhost:6379/1
+- *** --- * --- .> concurrency: 1 (prefork)
+-- ******* ---- .> task events: OFF (enable -E to monitor tasks in this worker)
+--- ***** ----- 
+ -------------- [queues]
+                .> stop_task        exchange=stop_task(direct) key=stop_task
+                
+

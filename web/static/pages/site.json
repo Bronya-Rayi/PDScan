@@ -1,0 +1,36 @@
+{
+  "status": 0,
+  "msg": "",
+  "data": {
+    "pages": [
+      {
+        "label": "Home",
+        "url": "/",
+        "redirect": "/task_manage"
+      },
+      {
+        "label": "功能模块",
+        "children": [
+          {
+            "label": "任务列表",
+            "url":"/task_manage",
+            "icon": "fa fa-navicon",
+            "schemaApi": "get:/pages/task_manage.json"
+          },
+          {
+            "label": "资产详情",
+            "url":"/task_detail",
+            "icon": "fa fa-search",
+            "schemaApi": "get:/pages/task_detail.json"
+          },
+          {
+            "label": "系统设置",
+            "url":"/settings",
+            "icon": "fa fa-cog",
+            "schemaApi": "get:/pages/settings.json"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,513 @@
+{
+  "type": "page",
+  "title": "任务详情：${IF(ISEMPTY(target), '全部任务', target)}",
+  "body": [
+    {
+      "type": "tabs",
+      "id": "u:351986284a23",
+      "tabs": [
+        {
+          "title": "站点详情",
+          "body": [
+            {
+              "type": "crud",
+              "id": "u:bec16aa37c2a",
+              "api": {
+                "url": "/api/v1/site/list?task_id=${IF(ISEMPTY(task_id), 'all', task_id)}&page=${page}&perPage=${perPage}&url=${url}&ip=${ip}&status_code=${status_code}&title=${title}&finger=${finger}",
+                "method": "get",
+                "messages": {
+                  "failed": "任务ID不存在！"
+                }
+              },
+              "syncLocation": false,
+              "columns": [
+                {
+                  "name": "id",
+                  "label": "ID",
+                  "type": "text",
+                  "id": "u:4a41bd8624b3"
+                },
+                {
+                  "name": "url",
+                  "label": "URL",
+                  "type": "text",
+                  "id": "u:c09b43c4fbcf"
+                },
+                {
+                  "type": "text",
+                  "label": "IP",
+                  "name": "ip",
+                  "id": "u:4b85aaf89ab0"
+                },
+                {
+                  "type": "text",
+                  "label": "状态码",
+                  "name": "status_code",
+                  "id": "u:09c039d6ba6f"
+                },
+                {
+                  "type": "text",
+                  "label": "网站标题",
+                  "name": "title",
+                  "id": "u:388084bc0861"
+                },
+                {
+                  "type": "text",
+                  "label": "指纹",
+                  "name": "finger",
+                  "id": "u:b5fe2b027aef"
+                }
+              ],
+              "perPageAvailable": [
+                20,
+                40,
+                80,
+                99999999
+              ],
+              "alwaysShowPagination": true,
+              "perPage": 20,
+              "filterColumnCount": 5,
+              "messages": {},
+              "filter": {
+                "title": "站点查询",
+                "body": [
+                  {
+                    "type": "input-text",
+                    "label": "URL",
+                    "name": "url",
+                    "id": "u:b25f4c207915"
+                  },
+                  {
+                    "type": "input-text",
+                    "label": "IP",
+                    "name": "ip",
+                    "id": "u:c9d68f113d3a"
+                  },
+                  {
+                    "type": "input-text",
+                    "label": "状态码",
+                    "name": "status_code",
+                    "id": "u:b12dd9db197f"
+                  },
+                  {
+                    "type": "input-text",
+                    "label": "网站标题",
+                    "name": "title",
+                    "id": "u:cc356e77e3f7"
+                  },
+                  {
+                    "type": "input-text",
+                    "label": "指纹",
+                    "name": "finger",
+                    "id": "u:15e880eafba1"
+                  }
+                ],
+                "id": "u:c9564a93b159",
+                "submitText": "提交",
+                "actions": [
+                  {
+                    "type": "submit",
+                    "label": "提交",
+                    "primary": true,
+                    "id": "u:44d653cfd66f"
+                  }
+                ],
+                "feat": "Insert"
+              },
+              "headerToolbar": [
+                {
+                  "type": "bulk-actions"
+                },
+                {
+                  "type": "export-csv",
+                  "tpl": "内容",
+                  "id": "u:19db19ebff40"
+                }
+              ],
+              "footerToolbar": [
+                {
+                  "type": "statistics"
+                },
+                {
+                  "type": "pagination"
+                },
+                {
+                  "type": "switch-per-page",
+                  "tpl": "内容",
+                  "id": "u:396c82cee0d5"
+                }
+              ],
+              "bulkActions": []
+            }
+          ],
+          "id": "u:a10f463b14ca"
+        },
+        {
+          "type": "crud",
+          "syncLocation": false,
+          "api": {
+            "method": "get",
+            "url": "/api/v1/site_path_scan/list?task_id=${IF(ISEMPTY(task_id), 'all', task_id)}&page=${page}&perPage=${perPage}&url=${url}",
+            "messages": {
+              "failed": "任务ID不存在！"
+            }
+          },
+          "columns": [
+            {
+              "name": "id",
+              "label": "ID",
+              "type": "text",
+              "id": "u:ec0fd80e4a6b"
+            },
+            {
+              "name": "url",
+              "label": "URL",
+              "type": "text",
+              "id": "u:b456d8122ba7"
+            }
+          ],
+          "perPageAvailable": [
+            20,
+            40,
+            60,
+            99999999
+          ],
+          "alwaysShowPagination": true,
+          "perPage": 20,
+          "filterColumnCount": 5,
+          "messages": {},
+          "filter": {
+            "title": "路径查询",
+            "body": [
+              {
+                "type": "input-text",
+                "label": "URL",
+                "name": "url",
+                "id": "u:528df2c9ed80"
+              }
+            ],
+            "submitText": "提交",
+            "id": "u:447449d9ee8a",
+            "actions": [
+              {
+                "type": "submit",
+                "label": "提交",
+                "primary": true,
+                "id": "u:f60010a1e0bc"
+              }
+            ],
+            "feat": "Insert"
+          },
+          "id": "u:f3e86baa8363",
+          "headerToolbar": [
+            {
+              "type": "bulk-actions"
+            },
+            {
+              "type": "export-csv",
+              "tpl": "内容",
+              "id": "u:6147e3194fe4"
+            }
+          ],
+          "footerToolbar": [
+            {
+              "type": "statistics"
+            },
+            {
+              "type": "pagination"
+            },
+            {
+              "type": "switch-per-page",
+              "tpl": "内容",
+              "id": "u:630ae5562329"
+            }
+          ],
+          "title": "路径扫描"
+        },
+        {
+          "title": "子域名",
+          "body": [
+            {
+              "type": "crud",
+              "syncLocation": false,
+              "api": {
+                "method": "get",
+                "url": "/api/v1/domain/list?task_id=${IF(ISEMPTY(task_id), 'all', task_id)}&page=${page}&perPage=${perPage}&domain=${domain}&domain_record=${domain_record}",
+                "messages": {
+                  "failed": "任务ID不存在！"
+                }
+              },
+              "columns": [
+                {
+                  "name": "domain",
+                  "label": "域名",
+                  "type": "text",
+                  "id": "u:656d95daca38"
+                },
+                {
+                  "name": "domain_record",
+                  "label": "域名解析",
+                  "type": "text",
+                  "id": "u:ad775b7f2fcd"
+                }
+              ],
+              "perPageAvailable": [
+                20,
+                40,
+                60,
+                99999999
+              ],
+              "alwaysShowPagination": true,
+              "perPage": 20,
+              "filterColumnCount": 5,
+              "messages": {},
+              "filter": {
+                "title": "域名查询",
+                "body": [
+                  {
+                    "type": "input-text",
+                    "label": "域名",
+                    "name": "domain",
+                    "id": "u:a34edacbface"
+                  },
+                  {
+                    "type": "input-text",
+                    "label": "域名解析",
+                    "name": "domain_record",
+                    "id": "u:4d298a20c039"
+                  }
+                ],
+                "submitText": "提交",
+                "id": "u:a5a126f1acfd",
+                "actions": [
+                  {
+                    "type": "submit",
+                    "label": "提交",
+                    "primary": true,
+                    "id": "u:2649894ea6ff"
+                  }
+                ],
+                "feat": "Insert"
+              },
+              "id": "u:8173a075606f",
+              "headerToolbar": [
+                {
+                  "type": "bulk-actions"
+                },
+                {
+                  "type": "export-csv",
+                  "tpl": "内容",
+                  "id": "u:0d99873dd239"
+                }
+              ],
+              "footerToolbar": [
+                {
+                  "type": "statistics"
+                },
+                {
+                  "type": "pagination"
+                },
+                {
+                  "type": "switch-per-page",
+                  "tpl": "内容",
+                  "id": "u:0412f0ee89b1"
+                }
+              ]
+            }
+          ],
+          "id": "u:91bcdd0a346c"
+        },
+        {
+          "title": "IP",
+          "body": [
+            {
+              "type": "crud",
+              "id": "u:76af5a4da890",
+              "messages": {},
+              "api": {
+                "url": "/api/v1/ip/list?task_id=${IF(ISEMPTY(task_id), 'all', task_id)}&page=${page}&perPage=${perPage}&ip=${domaipin}&port=${port}&service=${service}&banner=${banner}",
+                "method": "get",
+                "messages": {
+                  "failed": "任务ID不存在！"
+                }
+              },
+              "syncLocation": false,
+              "columns": [
+                {
+                  "name": "ip",
+                  "label": "IP",
+                  "type": "text",
+                  "id": "u:4918da9bba98"
+                },
+                {
+                  "name": "all_port",
+                  "label": "开放端口",
+                  "type": "text",
+                  "id": "u:396b4ed1e26d"
+                },
+                {
+                  "type": "text",
+                  "label": "所有服务",
+                  "name": "all_service",
+                  "id": "u:d7f54bfd5b5a"
+                },
+                {
+                  "type": "text",
+                  "label": "关联域名",
+                  "name": "related_domain",
+                  "id": "u:5df164987d16"
+                }
+              ],
+              "perPageAvailable": [
+                20,
+                40,
+                60,
+                9999999
+              ],
+              "alwaysShowPagination": true,
+              "perPage": 20,
+              "filterColumnCount": 5,
+              "filter": {
+                "title": "端口查询",
+                "body": [
+                  {
+                    "type": "input-text",
+                    "label": "IP",
+                    "name": "ip",
+                    "id": "u:36d07153b5a4"
+                  },
+                  {
+                    "type": "input-text",
+                    "label": "端口",
+                    "name": "port",
+                    "id": "u:621d61664daa"
+                  },
+                  {
+                    "type": "input-text",
+                    "label": "服务",
+                    "name": "service",
+                    "id": "u:04bfd35fd906"
+                  },
+                  {
+                    "type": "input-text",
+                    "label": "Banner",
+                    "name": "banner",
+                    "id": "u:6a5442a39d78"
+                  }
+                ],
+                "submitText": "提交",
+                "id": "u:49c7dd5f9dd2",
+                "actions": [
+                  {
+                    "type": "submit",
+                    "label": "提交",
+                    "primary": true,
+                    "id": "u:11a41662ad2b"
+                  }
+                ],
+                "feat": "Insert"
+              },
+              "headerToolbar": [
+                {
+                  "type": "bulk-actions"
+                },
+                {
+                  "type": "export-csv",
+                  "tpl": "内容",
+                  "id": "u:2fedf47dbb7f"
+                }
+              ],
+              "footerToolbar": [
+                {
+                  "type": "statistics"
+                },
+                {
+                  "type": "pagination"
+                },
+                {
+                  "type": "switch-per-page",
+                  "tpl": "内容",
+                  "id": "u:a2dca3702e4e"
+                }
+              ],
+              "bulkActions": []
+            }
+          ],
+          "id": "u:b0a765fb2a3a"
+        },
+        {
+          "title": "C段",
+          "body": [
+            {
+              "type": "service",
+              "api": {
+                "method": "get",
+                "url": "/api/v1/cduan/list?task_id=${task_id}"
+              },
+              "id": "u:a8980f196bfa",
+              "body": [
+                {
+                  "type": "code",
+                  "language": "html",
+                  "name": "c_duan",
+                  "id": "u:b2df5e731300"
+                }
+              ],
+              "messages": {},
+              "dsType": "api"
+            }
+          ],
+          "id": "u:d5f8f0f1efe1"
+        },
+        {
+          "title": "Web扫描",
+          "body": [
+            {
+              "type": "crud",
+              "syncLocation": false,
+              "api": {
+                "method": "get",
+                "url": "/api/v1/vulscan/list?task_id=${IF(ISEMPTY(task_id), 'all', task_id)}",
+                "messages": {
+                  "failed": "任务ID不存在！"
+                }
+              },
+              "columns": [
+                {
+                  "name": "xray_result_url",
+                  "label": "xray结果链接",
+                  "type": "link",
+                  "id": "u:90f889f2bd38"
+                }
+              ],
+              "id": "u:dcb73d0f4638",
+              "bulkActions": []
+            }
+          ],
+          "id": "u:c42520850f85"
+        }
+      ],
+      "className": "m-xs",
+      "tabsMode": "line"
+    }
+  ],
+  "id": "u:3f984166b478",
+  "pullRefresh": {
+    "disabled": true
+  },
+  "regions": [
+    "body",
+    "header"
+  ],
+  "style": {},
+  "themeCss": {
+    "baseControlClassName": {
+      "border:default": {
+        "borderLeftStyle": "none",
+        "borderTopStyle": "none",
+        "borderRightStyle": "none",
+        "borderBottomStyle": "none"
+      }
+    }
+  }
+}

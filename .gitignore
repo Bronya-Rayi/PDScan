@@ -1,5 +1,7 @@
 __pycache__/
 tools/
+log/
 *.pem
 *.csr
 *.pyc
+database.db

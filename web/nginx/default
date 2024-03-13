@@ -1,0 +1,15 @@
+server {
+  listen 8443 ssl;
+
+  ssl_certificate /app/PDScan/web/nginx/cert.pem;
+  ssl_certificate_key /app/PDScan/web/nginx/key.pem;
+
+  location /{
+    proxy_pass http://localhost:8888;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+
+    auth_basic "Restricted";
+    auth_basic_user_file /app/PDScan/web/nginx/htpasswd;
+  }
+}
