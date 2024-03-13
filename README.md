@@ -2,7 +2,7 @@
 
 自动化资产搜集+漏扫平台
 
-纯纯的胶水平台，借用了各个大师傅的优秀工具，完成了子域名查询（oneforall），ip端口扫描（scaninfo)，web站点存活探测（httpx），爬虫+漏扫（crawlergo+xray）的工作。
+纯纯的胶水平台，借用了各个大师傅的优秀工具，完成了子域名查询（oneforall），ip端口扫描（scaninfo)，web站点存活探测（httpx），web路径爆破（dirsearch），爬虫+漏扫（crawlergo+xray）的工作。
 
 后续可以自行添加其他工具模块，自定义扫描顺序
 
@@ -79,7 +79,7 @@ docker run --init -d -p 8443:8443 pdscan
 
 ### 首页
 
-![image-20230611210750780](./assets/image-20230611210750780.png)
+![image-20240313231159934](.assets/README/image-20240313231159934.png)
 
 ### 添加任务
 
@@ -89,23 +89,19 @@ docker run --init -d -p 8443:8443 pdscan
 
 例如，xray_crawlergo模块只负责从数据库中取出存活站点，然后漏扫，如果前期没有使用httpx或者其他模块探测存活站点，并存入数据库，xray_crawlergo模块自然无法运行
 
-![image-20230611205246865](./assets/image-20230611205246865.png)
-
-查看任务状态
-
-![image-20230611211033391](./assets/image-20230611211033391.png)
+![image-20240313231227750](.assets/README/image-20240313231227750.png)
 
 ### 任务详情
 
 均可导出csv，若想导出全部数据，先查询99999条（后端懒得写了）
 
-![image-20230611210726019](./assets/image-20230611210726019.png)
+![image-20240313231355246](.assets/README/image-20240313231355246.png)
 
-xray报告，点击查看
+### 工具配置
 
-![image-20230611211053094](./assets/image-20230611211053094.png)
+直接配置工具运行的命令行，简单易懂，目前工具自动更新还没写
 
-
+![image-20240313231406224](.assets/README/image-20240313231406224.png)
 
 ## 已有模块简介
 
@@ -120,6 +116,10 @@ xray报告，点击查看
 * httpx
 
   将用户输入的目标域名、ip和数据库中的子域名取出，判断web存活，将存活站点结果存入数据库
+
+* dirsearch
+
+  将数据库中存活的站点取出，利用字典进行路径爆破
 
 * xray_crawlergo
 
@@ -152,6 +152,10 @@ https://github.com/Qianlitp/crawlergo
 
 Web漏扫 xray
 https://github.com/chaitin/xray
+
+Web路径扫描 dirsearch
+
+https://github.com/maurosoria/dirsearch
 
 
 # 免责声明
